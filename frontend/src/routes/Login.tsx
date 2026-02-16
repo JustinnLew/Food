@@ -10,13 +10,21 @@ export default function Login() {
 
   const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    console.log("Loggin in with email:", email, "and password:", password);
-    // signIn(email, password);
-  }
+    console.log("Logging in with email:", email, "and password:", password);
+    try {
+      await signIn(email, password);
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
 
   return (
     <div className="h-screen flex-col w-screen bg-black text-white flex items-center justify-center">
-      <form className="flex flex-col gap-6 border border-white p-8 rounded-xl w-4/5 sm:w-1/2 lg:w-1/3">
+      <form
+        onSubmit={handleLogin}
+        className="flex flex-col gap-6 border border-white p-8 rounded-xl w-4/5 sm:w-1/2 lg:w-1/3"
+      >
         <h1 className="text-2xl font-bold">Login</h1>
         <div className="flex flex-col gap-5 my-4">
           <input
@@ -35,15 +43,17 @@ export default function Login() {
           />
         </div>
         <button
-            type="submit"
-            className="rounded bg-green-500 py-2 cursor-pointer"
-            onSubmit={handleLogin}>
+          type="submit"
+          disabled={loading}
+          className="rounded bg-green-500 py-2 cursor-pointer"
+          onSubmit={handleLogin}
+        >
           &gt;&gt;&gt;
         </button>
       </form>
       <div className="mt-6 flex gap-3">
         <p>Dont have an account?</p>
-        <a href="/signup" className="text-blue-200">
+        <a href="/signup" className="text-blue-300 hover:underline">
           Sign Up
         </a>
       </div>
