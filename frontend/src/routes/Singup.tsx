@@ -49,7 +49,10 @@ export default function SignUp() {
         onSubmit={handleSignUp}
         className="flex flex-col gap-6 border border-zinc-800 p-8 rounded-xl w-full max-w-md bg-zinc-900/50"
       >
-        <h1 className="text-3xl font-bold text-white">Create Account</h1>
+        <div className="flex gap-3 ">
+          <h1 className="flex-1 text-3xl font-bold">Create Account</h1>
+          <Link to="/" className="text-2xl font-bold cursor-pointer hover:text-zinc-300">&lt;</Link>
+        </div>
 
         <AnimatePresence mode="wait">
           {error && (
@@ -143,7 +146,7 @@ export default function SignUp() {
 
       <div className="mt-6 flex gap-3 text-zinc-400">
         <p>Already have an account?</p>
-        <Link to="/login" className="text-blue-300 hover:underline">
+        <Link to="/login" replace className="text-blue-300 hover:underline">
           Login
         </Link>
       </div>

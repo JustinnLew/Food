@@ -9,7 +9,7 @@ export default function NavBar() {
           className="cursor-pointer"
           >Sign Up</Link>
         <Link to="/login"
-        className="cursor-pointer"
+          className="cursor-pointer"
         >Login</Link>
       </div>
     </nav>
