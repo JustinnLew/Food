@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import supabase from "./Supabase";
 import type { Session } from "@supabase/supabase-js";
 import { SessionContext, type SessionContextType } from "./SessionContext";
@@ -33,12 +33,12 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const value: SessionContextType = {
+  const value: SessionContextType = useMemo(() => ({
     signIn,
     signOut,
     loading,
-    session,
-  };
+    session
+  }), [loading, session]);
 
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
