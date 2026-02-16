@@ -25,7 +25,39 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signUp = async (email: string, password: string) => {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      setLoading(false);
+      throw error;
+    }
+  };
+
   useEffect(() => {
+    const initAuth = async () => {
+      setLoading(true);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      // Just in case verify the session against the db
+      if (session) {
+        const { data, error } = await supabase.auth.getClaims();
+
+        if (error || !data) {
+          setSession(null);
+        } else {
+          setSession(session);
+        }
+      }
+      setLoading(false);
+    };
+
+    initAuth();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -40,6 +72,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       signIn,
       signOut,
+      signUp,
       loading,
       session,
     }),
