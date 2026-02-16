@@ -13,7 +13,7 @@ export default function SignUp() {
   const [error, setError] = useState<string | null>(null);
 
   if (session) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   const handleSignUp = async (e: React.SubmitEvent) => {

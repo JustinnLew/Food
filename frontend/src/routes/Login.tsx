@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
   if (session) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   const handleLogin = async (e: React.SubmitEvent) => {
