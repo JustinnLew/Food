@@ -33,12 +33,15 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const value: SessionContextType = useMemo(() => ({
-    signIn,
-    signOut,
-    loading,
-    session
-  }), [loading, session]);
+  const value: SessionContextType = useMemo(
+    () => ({
+      signIn,
+      signOut,
+      loading,
+      session,
+    }),
+    [loading, session],
+  );
 
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
