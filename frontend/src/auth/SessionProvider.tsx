@@ -5,21 +5,24 @@ import { SessionContext, type SessionContextType } from "./SessionContext";
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const signOut = async () => {
+    setLoading(true);
     await supabase.auth.signOut();
+    setLoading(false);
   };
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
+      setLoading(false);
       throw error;
     }
-    setLoading(false);
   };
 
   useEffect(() => {
