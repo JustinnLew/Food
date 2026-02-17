@@ -4,7 +4,6 @@ import Login from "./routes/Login";
 import SignUp from "./routes/Singup";
 import Landing from "./routes/Landing";
 
-
 function App() {
   return (
     <BrowserRouter>

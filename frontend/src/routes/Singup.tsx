@@ -3,6 +3,7 @@ import { useSession } from "../auth/SessionContext";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { isAuthApiError, isAuthWeakPasswordError } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function SignUp() {
   const { session, signUp, loading } = useSession();
@@ -11,6 +12,10 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   if (session) {
     return <Navigate to="/landing" replace />;
@@ -51,7 +56,12 @@ export default function SignUp() {
       >
         <div className="flex gap-3 ">
           <h1 className="flex-1 text-3xl font-bold">Create Account</h1>
-          <Link to="/" className="text-2xl font-bold cursor-pointer hover:text-zinc-300">&lt;</Link>
+          <Link
+            to="/"
+            className="text-2xl font-bold cursor-pointer hover:text-zinc-300"
+          >
+            &lt;
+          </Link>
         </div>
 
         <AnimatePresence mode="wait">

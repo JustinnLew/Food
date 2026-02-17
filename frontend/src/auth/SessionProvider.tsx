@@ -5,7 +5,7 @@ import { SessionContext, type SessionContextType } from "./SessionContext";
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const signOut = async () => {
     setLoading(true);
@@ -39,22 +39,24 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      setLoading(true);
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      // Just in case verify the session against the db
-      if (session) {
-        const { data, error } = await supabase.auth.getClaims();
-
-        if (error || !data) {
-          setSession(null);
-        } else {
-          setSession(session);
+        if (session) {
+          const { data, error } = await supabase.auth.getClaims();
+          if (error || !data) {
+            setSession(null);
+          } else {
+            setSession(session);
+          }
         }
+      } catch (err) {
+        console.error("Auth init error", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initAuth();
