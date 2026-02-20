@@ -1,6 +1,11 @@
 use std::sync::Arc;
 
-use axum::{extract::{Request, State}, http::{StatusCode, response}, middleware::Next, response::{IntoResponse, Response}};
+use axum::{
+    extract::{Request, State},
+    http::StatusCode,
+    middleware::Next,
+    response::{IntoResponse, Response},
+};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use serde::Deserialize;
 
@@ -14,11 +19,16 @@ struct Claims {
     role: String,
 }
 
-pub async fn auth_guard(State(state): State<Arc<AppState>>, mut req: Request, next: Next) -> Response {
-    let token_str = req.headers()
-    .get("Authorization")
-    .and_then(|header| header.to_str().ok())
-    .and_then(|header| header.strip_prefix("Bearer "));
+pub async fn auth_guard(
+    State(state): State<Arc<AppState>>,
+    mut req: Request,
+    next: Next,
+) -> Response {
+    let token_str = req
+        .headers()
+        .get("Authorization")
+        .and_then(|header| header.to_str().ok())
+        .and_then(|header| header.strip_prefix("Bearer "));
 
     let token = match token_str {
         Some(t) => t,
@@ -45,9 +55,10 @@ pub async fn auth_guard(State(state): State<Arc<AppState>>, mut req: Request, ne
     // validation.set_issuer(&[""]);
     let decoding_key = match DecodingKey::from_jwk(jwk) {
         Ok(key) => key,
-        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to decode JWK").into_response(),
+        Err(_) => {
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to decode JWK").into_response();
+        }
     };
-
 
     match decode::<Claims>(token, &decoding_key, &validation) {
         Ok(token) => {
@@ -55,7 +66,7 @@ pub async fn auth_guard(State(state): State<Arc<AppState>>, mut req: Request, ne
             let response = next.run(req).await;
             return response;
         }
-        Err(e) => {
+        Err(_) => {
             return (StatusCode::UNAUTHORIZED, "Invalid token").into_response();
         }
     }
