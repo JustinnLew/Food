@@ -3,6 +3,7 @@ use std::sync::Arc;
 use axum::{Router, middleware, routing::get};
 use jsonwebtoken::jwk::JwkSet;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
 use crate::middlewares::auth::auth_guard;
@@ -51,11 +52,12 @@ async fn main() {
             get(|| async { "Protected Route" })
                 .layer(middleware::from_fn_with_state(state.clone(), auth_guard)),
         )
+        .layer(CorsLayer::very_permissive())
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:6000")
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
     axum::serve(listener, app).await.unwrap();
-    info!("Server started on port 6000...");
+    info!("Server started on port 3000...");
 }
