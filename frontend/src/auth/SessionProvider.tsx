@@ -25,11 +25,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username,
+        }
+      }
     });
     if (error) {
       setLoading(false);

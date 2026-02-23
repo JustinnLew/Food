@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 export interface SessionContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string) => Promise<void>;
   loading: boolean;
   session: Session | null;
 }

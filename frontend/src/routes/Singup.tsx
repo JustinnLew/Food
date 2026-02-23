@@ -8,6 +8,7 @@ import LoadingSpinner from "./LoadingSpinner";
 export default function SignUp() {
   const { session, signUp, loading } = useSession();
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,9 +32,9 @@ export default function SignUp() {
     }
 
     try {
-      await signUp(email, password);
+      await signUp(email, password, username);
       navigate("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isAuthApiError(err)) {
         if (err.code === "user_already_exists") {
           setError("An account with this email already exists.");
@@ -85,6 +86,24 @@ export default function SignUp() {
         </AnimatePresence>
 
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="username"
+              className="text-sm font-semibold text-zinc-400"
+            >
+              Email Address
+            </label>
+            <input
+              id="username"
+              type="username"
+              autoComplete="username"
+              placeholder="Foodie"
+              required
+              className="block p-3 bg-zinc-800 border border-zinc-700 rounded-lg focus:ring-2 focus:ring-green-500 outline-none transition-all"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+
           <div className="flex flex-col gap-2">
             <label
               htmlFor="email"
