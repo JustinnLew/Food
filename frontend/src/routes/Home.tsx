@@ -7,12 +7,12 @@ export default function Home() {
   const { session, loading } = useSession();
 
   if (loading) {
-      return <LoadingSpinner />;
-    }
+    return <LoadingSpinner />;
+  }
 
-    if (session) {
-      return <Navigate to="/landing" replace />;
-    }
+  if (session) {
+    return <Navigate to="/landing" replace />;
+  }
 
   return (
     <div className="h-screen w-screen bg-black text-white flex flex-col">

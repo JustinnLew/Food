@@ -26,7 +26,7 @@ export default function Login() {
     try {
       await signIn(email, password);
       navigate("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (isAuthApiError(error)) {
         if (error.code === "invalid_credentials") {
           setError("Invalid email or password. Please try again");
