@@ -11,6 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.8",
+    "@mui/material": "^7.3.8",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/vite": "^4.1.18",
     "motion": "^12.34.0",
@@ -20,13 +24,13 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^9.39.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^10.0.1",
+    "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
