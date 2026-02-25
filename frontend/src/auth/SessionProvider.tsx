@@ -33,8 +33,8 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       options: {
         data: {
           username: username,
-        }
-      }
+        },
+      },
     });
     if (error) {
       setLoading(false);
