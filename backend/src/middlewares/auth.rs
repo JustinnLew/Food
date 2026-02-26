@@ -52,7 +52,7 @@ pub async fn auth_guard(
 
     let mut validation = Validation::new(Algorithm::ES256);
     validation.set_audience(&["authenticated"]);
-    // validation.set_issuer(&[""]);
+    validation.set_issuer(&[format!("https://yqcaszfogwfzlbbzhlrz.supabase.co/auth/v1")]);
     let decoding_key = match DecodingKey::from_jwk(jwk) {
         Ok(key) => key,
         Err(_) => {
