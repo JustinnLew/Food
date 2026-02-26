@@ -33,16 +33,13 @@ export default function Landing() {
 
         const newAmount = (item.amount ?? 0) - 1;
 
-        return newAmount > 0
-          ? { ...item, amount: newAmount }
-          : [];
-      })
+        return newAmount > 0 ? { ...item, amount: newAmount } : [];
+      }),
     );
   };
 
   useEffect(() => {
     if (ingredients.length > 0) {
-      console.log(ingredients);
       localStorage.setItem("pantry", JSON.stringify(ingredients));
     }
   }, [ingredients]);
