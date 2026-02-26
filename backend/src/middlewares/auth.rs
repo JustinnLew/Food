@@ -11,7 +11,7 @@ use serde::Deserialize;
 
 use crate::AppState;
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 struct Claims {
     sub: String,
 }
@@ -59,6 +59,7 @@ pub async fn auth_guard(
 
     match decode::<Claims>(token, &decoding_key, &validation) {
         Ok(token) => {
+            println!("Request from {:?}", token.claims.sub);
             req.extensions_mut().insert(token.claims);
             let response = next.run(req).await;
             return response;

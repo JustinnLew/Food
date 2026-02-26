@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::{Query, State}, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Query, State},
+    http::StatusCode,
+};
 use serde::{Deserialize, Serialize};
 use sqlx::{prelude::FromRow, query_as};
 
@@ -19,7 +23,7 @@ pub struct Ingredient {
 
 pub async fn search_ingredients(
     State(state): State<Arc<AppState>>,
-    Query(params): Query<IngredientSearchQuery>
+    Query(params): Query<IngredientSearchQuery>,
 ) -> Result<Json<Vec<Ingredient>>, StatusCode> {
     let pattern = format!("%{}%", params.q.trim());
 
