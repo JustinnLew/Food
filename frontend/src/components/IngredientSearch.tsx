@@ -1,12 +1,12 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
 import AuthFetch from "../auth/AuthFetch";
+import type { Ingredient } from "../interface";
 
-interface Ingredient {
-  id: number,
-  name: string,
-}
-
-export default function IngredientSearch() {
+export default function IngredientSearch({
+  onSelectHandler,
+}: {
+  onSelectHandler: (ingredient: Ingredient) => void;
+}) {
   const [input, setInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<Ingredient[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
@@ -40,10 +40,11 @@ export default function IngredientSearch() {
     setInput(value.name);
     setShowSuggestions(false);
     setSelected(0);
+    onSelectHandler(value);
   };
 
   useEffect(() => {
-    const timer = setTimeout(fetchSuggestions, 150);
+    const timer = setTimeout(fetchSuggestions, 100);
     return () => clearTimeout(timer);
   }, [input]);
 
@@ -62,7 +63,7 @@ export default function IngredientSearch() {
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-4 w-full">
       <label
         htmlFor="ingredient search"
         className="text-sm font-medium text-gray-700"
@@ -70,28 +71,30 @@ export default function IngredientSearch() {
         Add ingredients:
       </label>
       <div className="relative">
-
-      <input
-        type="text"
-        placeholder="Ingredient Name"
-        value={input}
-        className="border border-gray-400 p-2 rounded w-full focus:outline-none"
-        onChange={(e) => setInput(e.target.value)}
-        onFocus={() => setShowSuggestions(true)}
-        onBlur={() => setShowSuggestions(false)}
-        onKeyDown={(e) => handleKeyDown(e)}
+        <input
+          type="text"
+          placeholder="Ingredient Name"
+          value={input}
+          className="border border-gray-400 p-2 rounded w-full focus:outline-none"
+          onChange={(e) => setInput(e.target.value)}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setShowSuggestions(false)}
+          onKeyDown={(e) => handleKeyDown(e)}
         />
-      {showSuggestions && suggestions && (
-        <ul className="border-gray-400 z-10 absolute w-full bg-white border-x border-b rounded shadow-md max-h-60 overflow-y-auto">
-          {suggestions.map((s, index) => (
-            <li
-              key={s.id}
-              onMouseDown={() => handleSuggestionSelect(s)}
-              onMouseEnter={() => setSelected(index)}
-              className={`px-3 py-2 ${selected === index ? "bg-blue-500/50" : "bg-white"}`}>{s.name}</li>
-          ))}
-        </ul>
-      )}
+        {showSuggestions && suggestions && (
+          <ul className="border-gray-400 z-10 absolute w-full bg-white border-x border-b rounded shadow-md max-h-60 overflow-y-auto">
+            {suggestions.map((s, index) => (
+              <li
+                key={s.id}
+                onMouseDown={() => handleSuggestionSelect(s)}
+                onMouseEnter={() => setSelected(index)}
+                className={`px-3 py-2 ${selected === index ? "bg-blue-500/50" : "bg-white"}`}
+              >
+                {s.name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
