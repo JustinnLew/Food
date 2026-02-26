@@ -13,10 +13,7 @@ use crate::AppState;
 
 #[derive(Deserialize, Clone)]
 struct Claims {
-    iss: String,
     sub: String,
-    exp: i64,
-    role: String,
 }
 
 pub async fn auth_guard(

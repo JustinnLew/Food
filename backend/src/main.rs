@@ -47,14 +47,13 @@ async fn main() {
     });
     info!("Connected to Database...");
 
+    let protected_routes = Router::new()
+        .route("/api/ingredients", get(search_ingredients))
+        .layer(middleware::from_fn_with_state(state.clone(), auth_guard));
+
     let app = Router::new()
         .route("/api/test", get(|| async { "Hello World" }))
-        .route(
-            "/api/protected",
-            get(|| async { "Protected Route" })
-                .layer(middleware::from_fn_with_state(state.clone(), auth_guard)),
-        )
-        .route("/api/ingredients", get(search_ingredients))
+        .merge(protected_routes)
         .layer(CorsLayer::very_permissive())
         .with_state(state);
 
