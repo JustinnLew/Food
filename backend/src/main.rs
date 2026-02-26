@@ -7,8 +7,10 @@ use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
 use crate::middlewares::auth::auth_guard;
+use search::ingredient_search::search_ingredients;
 
 mod middlewares;
+mod search;
 
 #[derive(Clone)]
 struct AppState {
@@ -52,6 +54,7 @@ async fn main() {
             get(|| async { "Protected Route" })
                 .layer(middleware::from_fn_with_state(state.clone(), auth_guard)),
         )
+        .route("/api/ingredients", get(search_ingredients))
         .layer(CorsLayer::very_permissive())
         .with_state(state);
 
