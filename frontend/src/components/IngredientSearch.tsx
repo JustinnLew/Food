@@ -1,8 +1,13 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
 
+interface Ingredient {
+  id: number,
+  name: string,
+}
+
 export default function IngredientSearch() {
   const [input, setInput] = useState<string>("");
-  const [suggestions, setSuggesstions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Ingredient[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const [selected, setSelected] = useState(0);
 
@@ -12,27 +17,33 @@ export default function IngredientSearch() {
   */
 
   const fetchSuggestions = async () => {
+    if (!input) {
+      setSuggestions([]);
+      return;
+    }
     try {
       const res = await fetch(
-        `https://en.wikipedia.org/w/api.php?action=opensearch&origin=*&format=json&search=${input}`,
+        `http://127.0.0.1:3000/api/ingredients?q=${input}`,
       );
       const data = await res.json();
+      console.log(data);
 
-      const results = data[1];
-      setSuggesstions(results);
+      const results = data;
+      setSuggestions(results);
+      setSelected(0);
     } catch (error) {
       console.log("Something went wrong ", error);
     }
   };
 
-  const handleSuggestionSelect = (value: string) => {
-    setInput(value);
+  const handleSuggestionSelect = (value: Ingredient) => {
+    setInput(value.name);
     setShowSuggestions(false);
     setSelected(0);
   };
 
   useEffect(() => {
-    const timer = setTimeout(fetchSuggestions, 100);
+    const timer = setTimeout(fetchSuggestions, 150);
     return () => clearTimeout(timer);
   }, [input]);
 
@@ -74,10 +85,10 @@ export default function IngredientSearch() {
         <ul className="border-gray-400 z-10 absolute w-full bg-white border-x border-b rounded shadow-md max-h-60 overflow-y-auto">
           {suggestions.map((s, index) => (
             <li
-              key={index}
+              key={s.id}
               onMouseDown={() => handleSuggestionSelect(s)}
               onMouseEnter={() => setSelected(index)}
-              className={`px-3 py-2 ${selected === index ? "bg-blue-500/50" : "bg-white"}`}>{s}</li>
+              className={`px-3 py-2 ${selected === index ? "bg-blue-500/50" : "bg-white"}`}>{s.name}</li>
           ))}
         </ul>
       )}
