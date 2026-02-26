@@ -49,7 +49,7 @@ pub async fn auth_guard(
 
     let mut validation = Validation::new(Algorithm::ES256);
     validation.set_audience(&["authenticated"]);
-    validation.set_issuer(&[format!("https://yqcaszfogwfzlbbzhlrz.supabase.co/auth/v1")]);
+    validation.set_issuer(&[format!("https://{}.supabase.co/auth/v1", std::env::var("PROJECT_REF").expect("PROJECT_REF must be set"))]);
     let decoding_key = match DecodingKey::from_jwk(jwk) {
         Ok(key) => key,
         Err(_) => {

@@ -35,7 +35,7 @@ async fn main() {
         .expect("Failed to create pool");
 
     let jwks =
-        reqwest::get("https://yqcaszfogwfzlbbzhlrz.supabase.co/auth/v1/.well-known/jwks.json")
+        reqwest::get(format!("https://{}.supabase.co/auth/v1/.well-known/jwks.json", std::env::var("PROJECT_REF").expect("PROJECT_REF must be set")))
             .await
             .expect("Failed to fetch JWKS")
             .json()
