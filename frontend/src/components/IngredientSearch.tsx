@@ -1,4 +1,5 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
+import AuthFetch from "../auth/AuthFetch";
 
 interface Ingredient {
   id: number,
@@ -22,11 +23,10 @@ export default function IngredientSearch() {
       return;
     }
     try {
-      const res = await fetch(
+      const res = await AuthFetch(
         `http://127.0.0.1:3000/api/ingredients?q=${input}`,
       );
       const data = await res.json();
-      console.log(data);
 
       const results = data;
       setSuggestions(results);
