@@ -37,7 +37,6 @@ pub async fn search_ingredients(
         tracing::error!("Database error: {e}");
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    println!("{:?}", results);
 
     Ok(Json(results))
 }
