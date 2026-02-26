@@ -3,6 +3,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IngredientSearch from "../components/IngredientSearch";
 
 export default function Landing() {
   return (
@@ -15,20 +16,10 @@ export default function Landing() {
             aria-controls={"pantry-content"}
             id={"pantry-header"}
           >
-            <h1 className="text-xl font-bold">T</h1>
+            <h1 className="text-xl font-bold">Your Collection</h1>
           </AccordionSummary>
           <AccordionDetails className="flex flex-col gap-2">
-            <label
-              htmlFor="ingredient search"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Search for an ingredient:
-            </label>
-            <input
-              type="text"
-              placeholder="Ingredient Name"
-              className="border p-2 rounded w-full mb-4"
-            />
+            <IngredientSearch />
             <div className="border border-gray-300 mb-4" />
 
             <div className="grid grid-cols-3 gap-4">
