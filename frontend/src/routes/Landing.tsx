@@ -8,12 +8,21 @@ import type { Ingredient } from "../interface";
 import { useEffect, useState } from "react";
 
 export default function Landing() {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>(() => {
+    const saved = localStorage.getItem("pantry");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
+    }
+  });
 
   const onSelectHandler = (ingredient: Ingredient) => {
     setIngredients((prev) => {
       if (prev.find((i) => i.id === ingredient.id)) return prev;
-      ingredient.amount = 0;
+      ingredient.amount = 1;
       return [...prev, ingredient];
     });
   };
@@ -39,9 +48,7 @@ export default function Landing() {
   };
 
   useEffect(() => {
-    if (ingredients.length > 0) {
-      localStorage.setItem("pantry", JSON.stringify(ingredients));
-    }
+    localStorage.setItem("pantry", JSON.stringify(ingredients));
   }, [ingredients]);
 
   useEffect(() => {
