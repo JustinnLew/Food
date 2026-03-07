@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::{Router, middleware, routing::{get, post}};
 use jsonwebtoken::jwk::JwkSet;
+use reqwest::StatusCode;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
@@ -55,7 +56,7 @@ async fn main() {
         .layer(middleware::from_fn_with_state(state.clone(), auth_guard));
 
     let app = Router::new()
-        .route("/api/health", get(|| StatusCode::Ok))
+        .route("/api/health", get(|| StatusCode::OK))
         .merge(protected_routes)
         .layer(CorsLayer::very_permissive())
         .with_state(state);
