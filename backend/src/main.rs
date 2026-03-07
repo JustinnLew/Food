@@ -55,7 +55,7 @@ async fn main() {
         .layer(middleware::from_fn_with_state(state.clone(), auth_guard));
 
     let app = Router::new()
-        .route("/api/test", get(|| async { "Hello World" }))
+        .route("/api/health", get(|| StatusCode::Ok))
         .merge(protected_routes)
         .layer(CorsLayer::very_permissive())
         .with_state(state);
