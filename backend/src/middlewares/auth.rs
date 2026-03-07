@@ -12,8 +12,8 @@ use serde::Deserialize;
 use crate::AppState;
 
 #[derive(Deserialize, Clone, Debug)]
-struct Claims {
-    sub: String,
+pub struct Claims {
+    pub sub: String,
 }
 
 pub async fn auth_guard(

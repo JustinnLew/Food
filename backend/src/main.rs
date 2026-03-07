@@ -1,16 +1,18 @@
 use std::sync::Arc;
 
-use axum::{Router, middleware, routing::get};
+use axum::{Router, middleware, routing::{get, post}};
 use jsonwebtoken::jwk::JwkSet;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
-use crate::middlewares::auth::auth_guard;
+use crate::{middlewares::auth::auth_guard};
 use search::ingredient_search::search_ingredients;
+use routes::create_recipe::create_recipe;
 
 mod middlewares;
 mod search;
+mod routes;
 
 #[derive(Clone)]
 struct AppState {
@@ -49,6 +51,7 @@ async fn main() {
 
     let protected_routes = Router::new()
         .route("/api/ingredients", get(search_ingredients))
+        .route("/api/create-recipe", post(create_recipe))
         .layer(middleware::from_fn_with_state(state.clone(), auth_guard));
 
     let app = Router::new()
@@ -63,3 +66,4 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
     info!("Server started on port 3000...");
 }
+
