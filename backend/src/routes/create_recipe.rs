@@ -56,8 +56,8 @@ pub async fn create_recipe(
 
     for ing in payload.ingredients {
         query!(
-            "INSERT INTO public.recipe_ingredients (recipe_id, ingredient_id, amount, unit)
-            VALUES ($1, $2, $3, $4)",
+            r#"INSERT INTO public.recipe_ingredients (recipe_id, ingredient_id, amount, unit)
+            VALUES ($1, $2, $3, $4)"#,
             recipe_row.id,
             ing.id,
             ing.amount,
