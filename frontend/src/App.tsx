@@ -4,6 +4,7 @@ import Login from "./routes/Login";
 import SignUp from "./routes/Singup";
 import Landing from "./routes/Landing";
 import AuthenticatedRoute from "./auth/AuthenticatedRoute";
+import CreateRecipe from "./routes/CreateRecipe";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route element={<AuthenticatedRoute />}>
           <Route path="/landing" element={<Landing />} />
+          <Route path="/create-recipe" element={<CreateRecipe />} />
         </Route>
       </Routes>
     </BrowserRouter>

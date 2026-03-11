@@ -23,9 +23,10 @@ export default function IngredientSearch({
       return;
     }
     try {
-      const res = await AuthFetch(
-        `http://127.0.0.1:3000/api/ingredients?q=${input}`,
-      );
+      const res = await AuthFetch({
+        path: `http://127.0.0.1:3000/api/ingredients?q=${input}`,
+        method: "GET",
+      });
       const data = await res.json();
 
       const results = data;
@@ -64,12 +65,6 @@ export default function IngredientSearch({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <label
-        htmlFor="ingredient search"
-        className="text-sm font-medium text-gray-700"
-      >
-        Add ingredients:
-      </label>
       <div className="relative">
         <input
           type="text"

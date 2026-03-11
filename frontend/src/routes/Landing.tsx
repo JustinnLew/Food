@@ -74,7 +74,13 @@ export default function Landing() {
           >
             <h1 className="text-xl font-bold">Your Collection</h1>
           </AccordionSummary>
-          <AccordionDetails className="flex flex-col gap-">
+          <AccordionDetails className="flex flex-col">
+            <label
+              htmlFor="ingredient search"
+              className="text-sm font-medium text-gray-700 mb-4"
+            >
+              Add ingredients:
+            </label>
             <IngredientSearch onSelectHandler={onSelectHandler} />
             <div className="border border-gray-300 my-4" />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
