@@ -1,7 +1,7 @@
 interface Ingredient {
   id: number;
   name: string;
-  amount?: number;
+  amount: number;
   unit?: string;
 }
 

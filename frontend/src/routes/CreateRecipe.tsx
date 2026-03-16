@@ -26,6 +26,7 @@ export default function CreateRecipe() {
 
   const submitRecipe = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Submitting");
     console.log("Title: ", title);
     console.log("Difficulty: ", difficulty);
     console.log("CookTime: ", cookTimeMins);
@@ -100,16 +101,24 @@ export default function CreateRecipe() {
     );
   };
 
+  const updateIngredientAmount = (ing_id: number, amount: number) => {
+  setIngredients(
+    ingredients.map((ing) =>
+      ing.id === ing_id ? { ...ing, amount: amount } : ing
+    )
+  );
+};
+
   return (
     <>
       <NavBarLanding />
-      {/* <button
-                onClick={submitRecipe}
-            >YPIEEE</button> */}
       <div className="w-full flex flex-col items-center justify-center border scroll-smooth">
         <form
           className="flex flex-col w-1/2 border"
           onSubmit={(e) => submitRecipe(e)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
         >
           <h1 className="self-center">Page Title</h1>
           <label className="flex flex-col">
@@ -132,6 +141,7 @@ export default function CreateRecipe() {
                   return (
                     <button
                       key={d.id}
+                      type="button"
                       className={`flex-1 cursor-pointer border ${difficulty === d.id ? "border-red-500 border" : "border-gray-300"}`}
                       onClick={() => setDifficulty(d.id)}
                     >
@@ -144,7 +154,19 @@ export default function CreateRecipe() {
             <label className="flex flex-col">
               Cooking Time
               <div className="flex">
-                <input id="cook-time-mins" type="number" min="1" onChange={(e) => setCookTimeMins(parseInt(e.target.value))} />
+                  <input
+                    id="cook-time-mins"
+                    type="number"
+                    min="1"
+                    value={cookTimeMins || ""}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      setCookTimeMins(isNaN(val) ? 0 : val);
+                    }}
+                    onBlur={() => {
+                      if (cookTimeMins < 1) setCookTimeMins(1);
+                    }}
+                  />
                 min
               </div>
             </label>
@@ -157,7 +179,19 @@ export default function CreateRecipe() {
                 return (
                   <div key={ing.id} className="flex">
                     <h3>{ing.name}</h3>
-                    <input type="number" value={ing.amount} placeholder="Qty" />
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Qty"
+                      value={ing.amount || ""}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        updateIngredientAmount(ing.id, isNaN(val) ? 0 : val);
+                      }}
+                      onBlur={() => {
+                        if (ing.amount < 1) updateIngredientAmount(ing.id, 1);
+                      }}
+                    />
                     <select></select>
                     <button
                       type="button"
@@ -189,10 +223,13 @@ export default function CreateRecipe() {
                     Timer (min)
                     <input
                       type="number"
-                      value={inst.timer}
+                      value={inst.timer || ""}
                       onChange={(e) => {
-                        e.preventDefault();
-                        setInstructionTimer(index, parseInt(e.target.value));
+                        const val = parseInt(e.target.value);
+                        setInstructionTimer(index, isNaN(val) ? 0 : val);
+                      }}
+                      onBlur={() => {
+                        if (inst.timer < 1) setInstructionTimer(index, 1);
                       }}
                     />
                   </label>
