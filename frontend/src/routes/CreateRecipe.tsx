@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
 import { useSession } from "../auth/SessionContext";
-import IngredientSearch from "../components/IngredientSearch";
 import type { Ingredient, RecipeInstruction } from "../interface";
 import NavBarLanding from "../components/NavBarLanding";
 import CookingTime from "../components/createrecipe/CookingTime";
@@ -23,7 +22,7 @@ export default function CreateRecipe() {
     },
   ]);
 
-  const submitRecipe = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Title: ", title);
     console.log("Difficulty: ", difficulty);
@@ -42,31 +41,34 @@ export default function CreateRecipe() {
         timer: i.timer,
       })),
     );
+    const res = await AuthFetch({
+          path: `http://127.0.0.1:3000/api/create-recipe`,
+          method: "POST",
+          body: {
+              author: session?.user.id,
+              title: title,
+              difficulty: difficulty,
+              cook_time_minutes: cookTimeMins,
+              instructions: instructions.map((inst, index) => ({
+                step: index + 1,
+                text: inst.text,
+                timer: inst.timer,
+              })),
+              ingredients: ingredients.map(i => ({
+                id: i.id,
+                amount: i.amount,
+                unit: i.unit
+              })),
+          }
+      }
+      );
+      if (res.ok) {
+          const newId = await res.json();
+          console.log(`Recipe #${newId} created successfully!`);
+      } else {
+          alert("Something went wrong on the server.");
+      }
   };
-  // const submitRecipe = async () => {
-  //     const res = await AuthFetch({
-  //         path: `http://127.0.0.1:3000/api/create-recipe`,
-  //         method: "POST",
-  //         body: {
-  //             author: session?.user.id,
-  //             title: "TEST",
-  //             difficulty: 1,
-  //             cook_time_minutes: 30,
-  //             instructions: [
-  //                 { step: 1, text: "Boil water with salt", timer: 10 },
-  //                 { step: 2, text: "Cook pasta until al dente", timer: 8 }
-  //             ],
-  //             ingredients: [{id: 1, amount: 10, unit: "Kg"}]
-  //         }
-  //     }
-  //     );
-  //     if (res.ok) {
-  //         const newId = await res.json();
-  //         console.log(`Recipe #${newId} created successfully!`);
-  //     } else {
-  //         alert("Something went wrong on the server.");
-  //     }
-  // }
 
   const onIngredientSelect = (ingredient: Ingredient) => {
     if (ingredients.some((i) => i.id === ingredient.id)) {
