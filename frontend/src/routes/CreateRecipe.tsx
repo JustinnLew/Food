@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
 import { useSession } from "../auth/SessionContext";
 import type { Ingredient, RecipeInstruction } from "../interface";
@@ -25,32 +25,31 @@ export default function CreateRecipe() {
   const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await AuthFetch({
-          path: `http://127.0.0.1:3000/api/create-recipe`,
-          method: "POST",
-          body: {
-              author: session?.user.id,
-              title: title,
-              difficulty: difficulty,
-              cook_time_minutes: cookTimeMins,
-              instructions: instructions.map((inst, index) => ({
-                step: index + 1,
-                text: inst.text,
-                timer: inst.timer,
-              })),
-              ingredients: ingredients.map(i => ({
-                id: i.id,
-                amount: i.amount,
-                unit: i.unit
-              })),
-          }
-      }
-      );
-      if (res.ok) {
-          const newId = await res.json();
-          console.log(`Recipe #${newId} created successfully!`);
-      } else {
-          alert("Something went wrong on the server.");
-      }
+      path: `http://127.0.0.1:3000/api/create-recipe`,
+      method: "POST",
+      body: {
+        author: session?.user.id,
+        title: title,
+        difficulty: difficulty,
+        cook_time_minutes: cookTimeMins,
+        instructions: instructions.map((inst, index) => ({
+          step: index + 1,
+          text: inst.text,
+          timer: inst.timer,
+        })),
+        ingredients: ingredients.map((i) => ({
+          id: i.id,
+          amount: i.amount,
+          unit: i.unit,
+        })),
+      },
+    });
+    if (res.ok) {
+      const newId = await res.json();
+      console.log(`Recipe #${newId} created successfully!`);
+    } else {
+      alert("Something went wrong on the server.");
+    }
   };
 
   const onIngredientSelect = (ingredient: Ingredient) => {
