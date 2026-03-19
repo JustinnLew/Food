@@ -30,7 +30,6 @@ pub async fn create_recipe(
     println!("{:?}", payload);
 
     let user_id = Uuid::parse_str(&claims.sub).map_err(|_| StatusCode::BAD_REQUEST)?;
-    println!("UserId: {}", user_id);
     let mut tx = state.db.begin().await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -54,6 +53,7 @@ pub async fn create_recipe(
         StatusCode::BAD_REQUEST
     })?;
 
+    // Insert ingredients
     for ing in payload.ingredients {
         query!(
             r#"INSERT INTO public.recipe_ingredients (recipe_id, ingredient_id, amount, unit)

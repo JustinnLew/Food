@@ -19,6 +19,8 @@ pub struct IngredientSearchQuery {
 pub struct Ingredient {
     pub id: i64,
     pub name: String,
+    pub supported_units: Vec<String>,
+    pub default_unit: String,
 }
 
 pub async fn search_ingredients(
@@ -29,7 +31,7 @@ pub async fn search_ingredients(
 
     let results = query_as!(
         Ingredient,
-        "SELECT id, name FROM public.ingredients
+        "SELECT id, name, supported_units, default_unit FROM public.ingredients
          WHERE name ILIKE $1
          ORDER BY name ASC
          LIMIT 10",
