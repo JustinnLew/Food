@@ -24,23 +24,6 @@ export default function CreateRecipe() {
 
   const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Title: ", title);
-    console.log("Difficulty: ", difficulty);
-    console.log("CookTime: ", cookTimeMins);
-    console.table(
-      ingredients.map((i) => ({
-        name: i.name,
-        id: i.id,
-        amount: i.amount,
-        unit: i.unit,
-      })),
-    );
-    console.table(
-      instructions.map((i) => ({
-        text: i.text,
-        timer: i.timer,
-      })),
-    );
     const res = await AuthFetch({
           path: `http://127.0.0.1:3000/api/create-recipe`,
           method: "POST",
