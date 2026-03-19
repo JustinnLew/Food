@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
 import { useSession } from "../auth/SessionContext";
-import NavBar from "../components/NavBarHome";
 import IngredientSearch from "../components/IngredientSearch";
-import type { Ingredient } from "../interface";
+import type { Ingredient, RecipeInstruction } from "../interface";
 import NavBarLanding from "../components/NavBarLanding";
-
-interface RecipeInstruction {
-  text: string;
-  timer: number;
-}
+import CookingTime from "../components/createrecipe/CookingTime";
+import Difficulty from "../components/createrecipe/Difficulty";
+import RecipeName from "../components/createrecipe/RecipeName";
+import Instructions from "../components/createrecipe/Instructions";
+import Ingredients from "../components/createrecipe/Ingredients";
 
 export default function CreateRecipe() {
   const { session } = useSession();
@@ -26,12 +25,23 @@ export default function CreateRecipe() {
 
   const submitRecipe = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Submitting");
     console.log("Title: ", title);
     console.log("Difficulty: ", difficulty);
     console.log("CookTime: ", cookTimeMins);
-    console.log("Ingredients: ", ingredients);
-    console.log("Instructions: ", instructions);
+    console.table(
+      ingredients.map((i) => ({
+        name: i.name,
+        id: i.id,
+        amount: i.amount,
+        unit: i.unit,
+      })),
+    );
+    console.table(
+      instructions.map((i) => ({
+        text: i.text,
+        timer: i.timer,
+      })),
+    );
   };
   // const submitRecipe = async () => {
   //     const res = await AuthFetch({
@@ -58,18 +68,16 @@ export default function CreateRecipe() {
   //     }
   // }
 
-  const difficulties = [
-    { id: 1, type: "Easy" },
-    { id: 2, type: "Medium" },
-    { id: 3, type: "Hard" },
-  ];
-
   const onIngredientSelect = (ingredient: Ingredient) => {
     if (ingredients.some((i) => i.id === ingredient.id)) {
       return;
     }
-    setIngredients([...ingredients, ingredient]);
+    setIngredients([
+      ...ingredients,
+      { ...ingredient, amount: 1, unit: ingredient.default_unit },
+    ]);
   };
+
   const onIngredientDelete = (ing_id: number) => {
     setIngredients(ingredients.filter((i) => i.id !== ing_id));
   };
@@ -102,12 +110,20 @@ export default function CreateRecipe() {
   };
 
   const updateIngredientAmount = (ing_id: number, amount: number) => {
-  setIngredients(
-    ingredients.map((ing) =>
-      ing.id === ing_id ? { ...ing, amount: amount } : ing
-    )
-  );
-};
+    setIngredients(
+      ingredients.map((ing) =>
+        ing.id === ing_id ? { ...ing, amount: amount } : ing,
+      ),
+    );
+  };
+
+  const updateIngredientUnit = (ing_id: number, unit: string) => {
+    setIngredients(
+      ingredients.map((ing) =>
+        ing.id === ing_id ? { ...ing, unit: unit } : ing,
+      ),
+    );
+  };
 
   return (
     <>
@@ -121,137 +137,31 @@ export default function CreateRecipe() {
           }}
         >
           <h1 className="self-center">Page Title</h1>
-          <label className="flex flex-col">
-            Recipe Name
-            <input
-              id="title"
-              type="text"
-              placeholder="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="max-w-1/2"
-            />
-          </label>
+          <RecipeName setTitle={setTitle} title={title} />
           <h2>Details</h2>
           <div className="flex">
-            <label className="flex flex-col flex-1">
-              Difficulty
-              <div className="flex">
-                {difficulties.map((d) => {
-                  return (
-                    <button
-                      key={d.id}
-                      type="button"
-                      className={`flex-1 cursor-pointer border ${difficulty === d.id ? "border-red-500 border" : "border-gray-300"}`}
-                      onClick={() => setDifficulty(d.id)}
-                    >
-                      {d.type}
-                    </button>
-                  );
-                })}
-              </div>
-            </label>
-            <label className="flex flex-col">
-              Cooking Time
-              <div className="flex">
-                  <input
-                    id="cook-time-mins"
-                    type="number"
-                    min="1"
-                    value={cookTimeMins || ""}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
-                      setCookTimeMins(isNaN(val) ? 0 : val);
-                    }}
-                    onBlur={() => {
-                      if (cookTimeMins < 1) setCookTimeMins(1);
-                    }}
-                  />
-                min
-              </div>
-            </label>
+            <Difficulty setDifficulty={setDifficulty} difficulty={difficulty} />
+            <CookingTime
+              setCookTimeMins={setCookTimeMins}
+              cookTimeMins={cookTimeMins}
+            />
           </div>
           <h2>Ingredients</h2>
-          <div>
-            <IngredientSearch onSelectHandler={onIngredientSelect} />
-            <div className="flex flex-col">
-              {ingredients.map((ing) => {
-                return (
-                  <div key={ing.id} className="flex">
-                    <h3>{ing.name}</h3>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Qty"
-                      value={ing.amount || ""}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        updateIngredientAmount(ing.id, isNaN(val) ? 0 : val);
-                      }}
-                      onBlur={() => {
-                        if (ing.amount < 1) updateIngredientAmount(ing.id, 1);
-                      }}
-                    />
-                    <select></select>
-                    <button
-                      type="button"
-                      onClick={() => onIngredientDelete(ing.id)}
-                      className="self-center justify-self-center cursor-pointer"
-                    >
-                      x
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <Ingredients
+            onIngredientSelect={onIngredientSelect}
+            updateIngredientAmount={updateIngredientAmount}
+            updateIngredientUnit={updateIngredientUnit}
+            onIngredientDelete={onIngredientDelete}
+            ingredients={ingredients}
+          />
           <h2>Instructions</h2>
-          <div className="flex flex-col">
-            {instructions.map((inst, index) => {
-              return (
-                <div key={index} className="flex gap-3">
-                  <h3>{index + 1}</h3>
-                  <textarea
-                    className="flex-1"
-                    placeholder={"Describe this step..."}
-                    value={inst.text}
-                    onChange={(e) =>
-                      updateInstructionText(index, e.target.value)
-                    }
-                  ></textarea>
-                  <label className="flex flex-col">
-                    Timer (min)
-                    <input
-                      type="number"
-                      value={inst.timer || ""}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        setInstructionTimer(index, isNaN(val) ? 0 : val);
-                      }}
-                      onBlur={() => {
-                        if (inst.timer < 1) setInstructionTimer(index, 1);
-                      }}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    className="cursor-pointer"
-                    onClick={() => removeInstruction(index)}
-                  >
-                    x
-                  </button>
-                </div>
-              );
-            })}
-            <button
-              type="button"
-              onClick={addNewInstruction}
-              className="w-full"
-            >
-              {" "}
-              + add step
-            </button>
-          </div>
+          <Instructions
+            updateInstructionText={updateInstructionText}
+            setInstructionTimer={setInstructionTimer}
+            removeInstruction={removeInstruction}
+            addNewInstruction={addNewInstruction}
+            instructions={instructions}
+          />
           <button type="submit" className="self-end">
             Create Recipe!
           </button>
