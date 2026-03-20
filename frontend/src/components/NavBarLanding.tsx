@@ -11,7 +11,10 @@ export default function NavBarLanding() {
   return (
     <nav className="bg-green-500/20 p-6 w-full items-center flex gap-2">
       <Tooltip title="Home" arrow>
-        <button className="cursor-pointer" onClick={() => navigate("/landing")}>
+        <button
+          className="cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95"
+          onClick={() => navigate("/landing")}
+        >
           <HomeIcon size={28} fill="black" />
         </button>
       </Tooltip>
@@ -21,7 +24,7 @@ export default function NavBarLanding() {
       <div className="flex gap-6">
         <Tooltip title="Create New Recipe" placement="bottom" arrow>
           <button
-            className="cursor-pointer"
+            className="cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95"
             onClick={() => navigate("/create-recipe")}
           >
             <CreateRecipeIcon size={32} />
@@ -30,7 +33,7 @@ export default function NavBarLanding() {
 
         <button
           onClick={signOut}
-          className="text-zinc-900 rounded hover:text-blue-500 transition-colors"
+          className="text-zinc-900 rounded hover:text-blue-500 transition-colors cursor-pointer duration-200 hover:scale-105 active:scale-95"
         >
           Sign Out
         </button>
