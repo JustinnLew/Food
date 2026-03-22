@@ -12,7 +12,7 @@ use tracing::{Level, info};
 use crate::routes::ingredient_search::search_ingredients;
 use crate::{
     middlewares::auth::auth_guard,
-    repositories::{ingredient_repo::IngredientRepository, recipe_repo::RecipeRepository},
+    repositories::{ingredient_repo::IngredientRepository},
     services::{ingredients_service::IngredientService, recipe_service::RecipeService},
 };
 use routes::create_recipe::create_recipe;
