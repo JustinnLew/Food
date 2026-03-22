@@ -1,26 +1,34 @@
 use std::sync::Arc;
 
-use axum::{Router, middleware, routing::{get, post}};
+use axum::{
+    Router, middleware,
+    routing::{get, post},
+};
 use jsonwebtoken::jwk::JwkSet;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
-use crate::{middlewares::auth::auth_guard, repositories::ingredient_repo::IngredientRepository, services::ingredients_service::IngredientService};
-use routes::create_recipe::create_recipe;
 use crate::routes::ingredient_search::search_ingredients;
+use crate::{
+    middlewares::auth::auth_guard,
+    repositories::{ingredient_repo::IngredientRepository, recipe_repo::RecipeRepository},
+    services::{ingredients_service::IngredientService, recipe_service::RecipeService},
+};
+use routes::create_recipe::create_recipe;
 
 mod middlewares;
-mod services;
-mod routes;
-mod repositories;
 mod models;
+mod repositories;
+mod routes;
+mod services;
 
 #[derive(Clone)]
 struct AppState {
     db: Pool<Postgres>,
     jwks: JwkSet,
     ingredient_service: IngredientService,
+    recipe_service: RecipeService,
 }
 
 #[tokio::main]
@@ -39,16 +47,19 @@ async fn main() {
         .await
         .expect("Failed to create pool");
 
-    let jwks =
-        reqwest::get(format!("https://{}.supabase.co/auth/v1/.well-known/jwks.json", std::env::var("PROJECT_REF").expect("PROJECT_REF must be set")))
-            .await
-            .expect("Failed to fetch JWKS")
-            .json()
-            .await
-            .expect("Failed to parse JWKS");
+    let jwks = reqwest::get(format!(
+        "https://{}.supabase.co/auth/v1/.well-known/jwks.json",
+        std::env::var("PROJECT_REF").expect("PROJECT_REF must be set")
+    ))
+    .await
+    .expect("Failed to fetch JWKS")
+    .json()
+    .await
+    .expect("Failed to parse JWKS");
 
     let state = Arc::new(AppState {
         ingredient_service: IngredientService::new(IngredientRepository::new(pool.clone())),
+        recipe_service: RecipeService,
         jwks: jwks,
         db: pool,
     });
@@ -71,4 +82,3 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
     info!("Server started on port 3000...");
 }
-

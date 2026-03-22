@@ -1,3 +1,5 @@
+use reqwest::StatusCode;
+
 use crate::{IngredientRepository, models::ingredients::Ingredient};
 
 #[derive(Clone)]
@@ -10,7 +12,10 @@ impl IngredientService {
         Self { repo }
     }
 
-    pub async fn search(&self, query: String) -> Result<Vec<Ingredient>, sqlx::Error> {
-        self.repo.search_by_name(&query).await
+    pub async fn search(&self, query: String) -> Result<Vec<Ingredient>, StatusCode> {
+        self.repo
+            .search_by_name(&query)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
 }
