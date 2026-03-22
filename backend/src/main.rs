@@ -6,18 +6,21 @@ use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
-use crate::{middlewares::auth::auth_guard};
-use search::ingredient_search::search_ingredients;
+use crate::{middlewares::auth::auth_guard, repositories::ingredient_repo::IngredientRepository, services::ingredients_service::IngredientService};
 use routes::create_recipe::create_recipe;
+use crate::routes::ingredient_search::search_ingredients;
 
 mod middlewares;
-mod search;
+mod services;
 mod routes;
+mod repositories;
+mod models;
 
 #[derive(Clone)]
 struct AppState {
     db: Pool<Postgres>,
     jwks: JwkSet,
+    ingredient_service: IngredientService,
 }
 
 #[tokio::main]
@@ -43,9 +46,11 @@ async fn main() {
             .json()
             .await
             .expect("Failed to parse JWKS");
+
     let state = Arc::new(AppState {
-        db: pool,
+        ingredient_service: IngredientService::new(IngredientRepository::new(pool.clone())),
         jwks: jwks,
+        db: pool,
     });
     info!("Connected to Database...");
 
