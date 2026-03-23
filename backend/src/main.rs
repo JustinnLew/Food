@@ -9,13 +9,14 @@ use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
-use crate::routes::ingredient_search::search_ingredients;
 use crate::{
     middlewares::auth::auth_guard,
     repositories::{ingredient_repo::IngredientRepository},
     services::{ingredients_service::IngredientService, recipe_service::RecipeService},
 };
+use routes::ingredient_search::search_ingredients;
 use routes::create_recipe::create_recipe;
+use routes::query_recipes::query_recipes;
 
 mod middlewares;
 mod models;
@@ -67,7 +68,8 @@ async fn main() {
 
     let protected_routes = Router::new()
         .route("/api/ingredients", get(search_ingredients))
-        .route("/api/create-recipe", post(create_recipe))
+        .route("/api/recipe/create", post(create_recipe))
+        .route("/api/recipe/query", post(query_recipes))
         .layer(middleware::from_fn_with_state(state.clone(), auth_guard));
 
     let app = Router::new()
