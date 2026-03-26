@@ -17,7 +17,7 @@ pub async fn create_recipe(
 
     let recipe_id = state
         .recipe_service
-        .create_recipe(user_id, payload, state.db.clone())
+        .create_recipe(user_id, payload)
         .await
         .map_err(|e| {
             eprintln!("Failed to create recipe: {:?}", e);

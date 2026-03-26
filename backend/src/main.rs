@@ -11,11 +11,11 @@ use tracing::{Level, info};
 
 use crate::{
     middlewares::auth::auth_guard,
-    repositories::{ingredient_repo::IngredientRepository},
+    repositories::{ingredient_repo::IngredientRepository, recipe_repo::RecipeRepository},
     services::{ingredients_service::IngredientService, recipe_service::RecipeService},
 };
-use routes::ingredient_search::search_ingredients;
 use routes::create_recipe::create_recipe;
+use routes::ingredient_search::search_ingredients;
 use routes::query_recipes::query_recipes;
 
 mod middlewares;
@@ -60,7 +60,7 @@ async fn main() {
 
     let state = Arc::new(AppState {
         ingredient_service: IngredientService::new(IngredientRepository::new(pool.clone())),
-        recipe_service: RecipeService,
+        recipe_service: RecipeService::new(RecipeRepository::new(pool.clone())),
         jwks: jwks,
         db: pool,
     });

@@ -1,20 +1,27 @@
 use reqwest::StatusCode;
-use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{models::recipe::CreateRecipe, repositories::recipe_repo::RecipeRepository};
+use crate::{models::recipe::{CreateRecipe, RecipeRandomQueryResultRow}, repositories::recipe_repo::RecipeRepository};
 
 #[derive(Clone)]
-pub struct RecipeService;
+pub struct RecipeService {
+    pub repo: RecipeRepository,
+}
 
 impl RecipeService {
+    pub fn new(repo: RecipeRepository) -> Self {
+        Self { repo }
+    }
+
     pub async fn create_recipe(
         &self,
         user_id: Uuid,
         payload: CreateRecipe,
-        db: PgPool,
     ) -> Result<i64, StatusCode> {
-        let mut tx = db
+        // Could consider a refactor to move this into the repository layer?
+        let mut tx = self
+            .repo
+            .pool
             .begin()
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -33,5 +40,13 @@ impl RecipeService {
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         Ok(recipe_id)
+    }
+
+    pub async fn query_recipe_strict(&self) {}
+
+    pub async fn query_recipe_relaxed(&self) {}
+
+    pub async fn query_recipe_random(&self) -> Result<Vec<RecipeRandomQueryResultRow>, StatusCode> {
+        self.repo.query_recipes_random().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
 }
