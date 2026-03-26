@@ -57,7 +57,9 @@ impl RecipeRepository {
 
     pub async fn query_recipes_relaxed() {}
 
-    pub async fn query_recipes_random(&self) -> Result<Vec<RecipeRandomQueryResultRow>, sqlx::Error> {
+    pub async fn query_recipes_random(
+        &self,
+    ) -> Result<Vec<RecipeRandomQueryResultRow>, sqlx::Error> {
         let recipes = query!(
             r#"
             SELECT
@@ -84,13 +86,16 @@ impl RecipeRepository {
         .fetch_all(&self.pool)
         .await?;
 
-        Ok(recipes.into_iter().map(|r| RecipeRandomQueryResultRow {
-            id: r.id,
-            title: r.title,
-            difficulty: r.difficulty,
-            cook_time_mins: r.cook_time_mins,
-            instructions: r.instructions,
-            ingredients: r.ingredients.unwrap_or(json!([])),
-        }).collect())
+        Ok(recipes
+            .into_iter()
+            .map(|r| RecipeRandomQueryResultRow {
+                id: r.id,
+                title: r.title,
+                difficulty: r.difficulty,
+                cook_time_mins: r.cook_time_mins,
+                instructions: r.instructions,
+                ingredients: r.ingredients.unwrap_or(json!([])),
+            })
+            .collect())
     }
 }

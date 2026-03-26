@@ -1,7 +1,10 @@
 use reqwest::StatusCode;
 use uuid::Uuid;
 
-use crate::{models::recipe::{CreateRecipe, RecipeRandomQueryResultRow}, repositories::recipe_repo::RecipeRepository};
+use crate::{
+    models::recipe::{CreateRecipe, RecipeRandomQueryResultRow},
+    repositories::recipe_repo::RecipeRepository,
+};
 
 #[derive(Clone)]
 pub struct RecipeService {
@@ -47,6 +50,9 @@ impl RecipeService {
     pub async fn query_recipe_relaxed(&self) {}
 
     pub async fn query_recipe_random(&self) -> Result<Vec<RecipeRandomQueryResultRow>, StatusCode> {
-        self.repo.query_recipes_random().await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+        self.repo
+            .query_recipes_random()
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
 }
