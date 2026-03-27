@@ -4,10 +4,12 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IngredientSearch from "../components/IngredientSearch";
-import type { Ingredient } from "../interface";
+import type { Ingredient, Recipe } from "../interface";
 import { useEffect, useState } from "react";
+import AuthFetch from "../auth/AuthFetch";
 
 export default function Landing() {
+  const [recipes, setRecipes] = useState<Recipe[]>();
   const [ingredients, setIngredients] = useState<Ingredient[]>(() => {
     const saved = localStorage.getItem("pantry");
     if (saved) {
@@ -19,10 +21,34 @@ export default function Landing() {
     }
   });
 
+  useEffect(() => {
+    const initRecipes = async () => {
+      const res = await AuthFetch({
+          path: `http://127.0.0.1:3000/api/recipe/query`,
+          method: "POST",
+          body: {
+            mode: "random",
+            page: 1,
+            ingredients: ingredients.map(i => ({
+              id: i.id,
+              amount: i.amount,
+              unit: i.unit || i.default_unit,
+            })),
+            time: 30,
+            difficulty: 2
+          },
+        });
+      const data = await res.json();
+      console.log(data);
+      }
+      initRecipes();
+  }, [])
+
   const onSelectHandler = (ingredient: Ingredient) => {
     setIngredients((prev) => {
       if (prev.find((i) => i.id === ingredient.id)) return prev;
       ingredient.amount = 1;
+      ingredient.unit = ingredient.default_unit;
       return [...prev, ingredient];
     });
   };

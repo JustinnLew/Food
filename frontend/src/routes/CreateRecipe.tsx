@@ -32,8 +32,7 @@ export default function CreateRecipe() {
         title: title,
         difficulty: difficulty,
         cook_time_minutes: cookTimeMins,
-        instructions: instructions.map((inst, index) => ({
-          step: index + 1,
+        instructions: instructions.map((inst) => ({
           text: inst.text,
           timer: inst.timer,
         })),
