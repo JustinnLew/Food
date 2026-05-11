@@ -30,7 +30,7 @@ export default function Instructions({
               <div className="flex gap-3">
                 {/* Instruction Textarea */}
                 <textarea
-                  className="flex-1 bg-background border border-green-muted/50 rounded-md p-3 text-cream placeholder:text-cream/20 focus:outline-none focus:border-green transition-colors min-h-[80px] resize-none"
+                  className="flex-1 bg-background border border-green-muted/50 rounded-md p-3 text-cream placeholder:text-cream/20 focus:outline-none focus:border-green transition-colors min-h-[20] resize-none"
                   placeholder={"Describe this step..."}
                   value={inst.text}
                   onChange={(e) => updateInstructionText(index, e.target.value)}
