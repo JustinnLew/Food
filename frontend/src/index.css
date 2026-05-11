@@ -1,1 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;1,200&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --color-background: #0f130a;
+  --color-surface: #161d10;
+  --color-surface2: #1e2a16;
+  --color-border: #2d3d22;
+  --color-green: #7ab648;
+  --color-green-muted: #4d7a28;
+  --color-cream: #e8dfc8;
+  --color-cream-dim: #9e9480;
+  --color-accent: #c8a84b;
+  --font-display: "Crimson Pro", serif;
+
+  --tracking-nav: 0.012em;
+}
+
+html {
+  overflow-y: scroll;
+}

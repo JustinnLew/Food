@@ -24,25 +24,25 @@ export default function Landing() {
   useEffect(() => {
     const initRecipes = async () => {
       const res = await AuthFetch({
-          path: `http://127.0.0.1:3000/api/recipe/query`,
-          method: "POST",
-          body: {
-            mode: "random",
-            page: 1,
-            ingredients: ingredients.map(i => ({
-              id: i.id,
-              amount: i.amount,
-              unit: i.unit || i.default_unit,
-            })),
-            time: 30,
-            difficulty: 2
-          },
-        });
+        path: `http://127.0.0.1:3000/api/recipe/query`,
+        method: "POST",
+        body: {
+          mode: "random",
+          page: 1,
+          ingredients: ingredients.map((i) => ({
+            id: i.id,
+            amount: i.amount,
+            unit: i.unit || i.default_unit,
+          })),
+          time: 30,
+          difficulty: 2,
+        },
+      });
       const data = await res.json();
       console.log(data);
-      }
-      initRecipes();
-  }, [])
+    };
+    initRecipes();
+  }, []);
 
   const onSelectHandler = (ingredient: Ingredient) => {
     setIngredients((prev) => {
@@ -89,36 +89,33 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen w-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen w-screen font-display bg-background">
       <NavBarLanding />
       <div className="flex flex-col m-6 h-full">
-        <Accordion className="w-full p-1">
+        <Accordion className="w-full p-1 bg-surface border border-green-muted text-cream">
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon sx={{ color: "#e8dfc8" }} />}
             aria-controls={"pantry-content"}
             id={"pantry-header"}
           >
-            <h1 className="text-xl font-bold">Your Collection</h1>
+            <h1 className="text-3xl text-cream">Your Collection</h1>
           </AccordionSummary>
-          <AccordionDetails className="flex flex-col">
-            <label
-              htmlFor="ingredient search"
-              className="text-sm font-medium text-gray-700 mb-4"
-            >
-              Add ingredients:
-            </label>
+          <AccordionDetails className="flex flex-col gap-6">
+            <div className="w-full border-b border-cream/40" />
             <IngredientSearch onSelectHandler={onSelectHandler} />
-            <div className="border border-gray-300 my-4" />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {/* Ingredient card here */}
               {ingredients.map((i) => (
                 <div
-                  className="flex border border-gray-300 rounded-lg p-3"
+                  className="flex bg-surface2 border border-green-muted hover:border-green transition-all duration-200 rounded p-3"
                   key={i.id}
                 >
                   <div className="flex-1 flex-col ">
-                    <h1>{i.name}</h1>
-                    <p>{i.amount}</p>
+                    <h1 className="tracking-wider text-lg">{i.name}</h1>
+                    <div className="flex gap-1 text-cream-dim text-md">
+                      <p className="tracking-wide">x{i.amount}</p>
+                      <p className="tracking-widest">{i.unit}</p>
+                    </div>
                   </div>
                   <div className="flex flex-col">
                     <button
@@ -139,14 +136,32 @@ export default function Landing() {
             </div>
           </AccordionDetails>
         </Accordion>
-        <div className="flex flex-col gap-4 mt-4 border border-gray-300 rounded-lg p-3">
-          <h1 className="text-xl font-bold">Recommendations</h1>
-          <div className="flex gap-6 h-64">
-            <div className="flex-1 flex-col border border-gray-300 rounded-md p-3"></div>
+        <div className="flex flex-col gap-4 mt-4 rounded-lg p-5 bg-surface border border-green-muted text-cream">
+          <h1 className="text-3xl">Recommendations</h1>
+          <div className="flex gap-6 h-120">
+            <div className="flex-1 flex flex-col border border-green-muted rounded-md">
+              <img
+                src="https://myfoodbook.com.au/sites/default/files/styles/schema_img/public/recipe_photo/Spaghetti_Bolognese%20Sauce_0.jpeg"
+                className="h-2/3 w-full object-cover"
+              />
+              <div className="flex-1 flex flex-col px-5 py-4 justify-between">
+                <div className="flex gap-2">
+                  <div className="">98% match</div>
+                  <div>·</div>
+                  <div>4 of 5 ingredients</div>
+                </div>
+                <div className="text-3xl">Spaghetti Bolognese</div>
+                <div className="flex gap-6 text-cream-dim text-lg">
+                  <div>20 min</div>
+                  <div>Easy</div>
+                  <div>2 servings</div>
+                </div>
+              </div>
+            </div>
             <div className="flex-1 flex-col border border-gray-300 rounded-md p-3"></div>
             <div className="flex-1 flex-col border border-gray-300 rounded-md p-3"></div>
           </div>
-          <div className="self-center">RR</div>
+          <div className="self-center">Refresh?</div>
         </div>
       </div>
     </div>

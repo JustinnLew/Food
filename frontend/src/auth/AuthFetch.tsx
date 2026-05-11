@@ -14,6 +14,7 @@ export default async function AuthFetch({
     throw error;
   }
   const token = data.session?.access_token;
+  console.log(path, method, body);
   const res = await fetch(path, {
     method: method,
     headers: {

@@ -12,6 +12,7 @@ import Ingredients from "../components/createrecipe/Ingredients";
 export default function CreateRecipe() {
   const { session } = useSession();
   const [title, setTitle] = useState<string>("");
+  const [imageSrc, setImageSrc] = useState<string>("");
   const [difficulty, setDifficulty] = useState<number>(1);
   const [cookTimeMins, setCookTimeMins] = useState<number>(30);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -22,7 +23,7 @@ export default function CreateRecipe() {
     },
   ]);
 
-  const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const submitRecipe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await AuthFetch({
       path: `http://127.0.0.1:3000/api/recipe/create`,
@@ -30,6 +31,7 @@ export default function CreateRecipe() {
       body: {
         author: session?.user.id,
         title: title,
+        image_src: imageSrc,
         difficulty: difficulty,
         cook_time_minutes: cookTimeMins,
         instructions: instructions.map((inst) => ({
@@ -52,9 +54,7 @@ export default function CreateRecipe() {
   };
 
   const onIngredientSelect = (ingredient: Ingredient) => {
-    if (ingredients.some((i) => i.id === ingredient.id)) {
-      return;
-    }
+    if (ingredients.some((i) => i.id === ingredient.id)) return;
     setIngredients([
       ...ingredients,
       { ...ingredient, amount: 1, unit: ingredient.default_unit },
@@ -72,7 +72,6 @@ export default function CreateRecipe() {
   const removeInstruction = (index: number) => {
     const modified = [...instructions];
     modified.splice(index, 1);
-
     setInstructions(modified);
   };
 
@@ -109,47 +108,113 @@ export default function CreateRecipe() {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen w-screen font-display bg-background text-cream">
       <NavBarLanding />
-      <div className="w-full flex flex-col items-center justify-center border scroll-smooth">
+      <div className="flex flex-col m-6 items-center">
         <form
-          className="flex flex-col w-1/2 border"
+          className="flex flex-col w-full md:w-2/3 lg:w-1/2 gap-6 rounded-lg p-8 bg-surface border border-green-muted shadow-xl"
           onSubmit={(e) => submitRecipe(e)}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.preventDefault();
           }}
         >
-          <h1 className="self-center">Page Title</h1>
-          <RecipeName setTitle={setTitle} title={title} />
-          <h2>Details</h2>
-          <div className="flex">
-            <Difficulty setDifficulty={setDifficulty} difficulty={difficulty} />
-            <CookingTime
-              setCookTimeMins={setCookTimeMins}
-              cookTimeMins={cookTimeMins}
-            />
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl tracking-tight">Create Recipe</h1>
+            <div className="w-full border-b border-cream/20 mt-2" />
           </div>
-          <h2>Ingredients</h2>
-          <Ingredients
-            onIngredientSelect={onIngredientSelect}
-            updateIngredientAmount={updateIngredientAmount}
-            updateIngredientUnit={updateIngredientUnit}
-            onIngredientDelete={onIngredientDelete}
-            ingredients={ingredients}
-          />
-          <h2>Instructions</h2>
-          <Instructions
-            updateInstructionText={updateInstructionText}
-            setInstructionTimer={setInstructionTimer}
-            removeInstruction={removeInstruction}
-            addNewInstruction={addNewInstruction}
-            instructions={instructions}
-          />
-          <button type="submit" className="self-end">
-            Create Recipe!
-          </button>
+
+          {/* Basic Info */}
+          <RecipeName setTitle={setTitle} title={title} />
+
+          {/* Image Upload Section */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">
+              Cover Image
+            </h2>
+            <div className="flex flex-col gap-4 p-4 bg-surface2 border border-green-muted rounded-md">
+              <input
+                type="text"
+                placeholder="Paste image URL here (e.g. https://example.com/image.jpg)"
+                className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
+                value={imageSrc}
+                onChange={(e) => setImageSrc(e.target.value)}
+              />
+              {imageSrc && (
+                <div className="relative h-120 w-full overflow-hidden rounded border border-green-muted bg-background">
+                  <img
+                    src={imageSrc}
+                    alt="Preview"
+                    className="h-full w-full object-cover opacity-80"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                  <div className="absolute bottom-2 left-2 bg-surface/80 px-2 py-1 text-xs rounded">
+                    Preview
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Details Section */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">Details</h2>
+            <div className="flex gap-8 p-4 bg-surface2 border border-green-muted rounded-md">
+              <Difficulty
+                setDifficulty={setDifficulty}
+                difficulty={difficulty}
+              />
+              <div className="border-l border-green-muted h-full" />
+              <CookingTime
+                setCookTimeMins={setCookTimeMins}
+                cookTimeMins={cookTimeMins}
+              />
+            </div>
+          </div>
+
+          {/* Ingredients Section */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">
+              Ingredients
+            </h2>
+            <div className="p-4 bg-surface2 border border-green-muted rounded-md">
+              <Ingredients
+                onIngredientSelect={onIngredientSelect}
+                updateIngredientAmount={updateIngredientAmount}
+                updateIngredientUnit={updateIngredientUnit}
+                onIngredientDelete={onIngredientDelete}
+                ingredients={ingredients}
+              />
+            </div>
+          </div>
+
+          {/* Instructions Section */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">
+              Instructions
+            </h2>
+            <div className="p-4 bg-surface2 border border-green-muted rounded-md">
+              <Instructions
+                updateInstructionText={updateInstructionText}
+                setInstructionTimer={setInstructionTimer}
+                removeInstruction={removeInstruction}
+                addNewInstruction={addNewInstruction}
+                instructions={instructions}
+              />
+            </div>
+          </div>
+
+          {/* Submission */}
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="w-full border-b border-cream/20" />
+            <button
+              type="submit"
+              className="self-end px-8 py-3 bg-green-muted hover:bg-green-muted/80 text-cream text-lg rounded transition-all duration-200 border border-cream/10 active:scale-95"
+            >
+              Post Recipe
+            </button>
+          </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }

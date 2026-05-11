@@ -9,17 +9,24 @@ export default function NavBarLanding() {
   const { signOut } = useSession();
 
   return (
-    <nav className="bg-green-500/20 p-6 w-full items-center flex gap-2">
+    <nav
+      className="bg-background p-6 w-full justify-center flex gap-6 border-b-green-muted border-b"
+      style={{
+        wordSpacing: "0.25em",
+      }}
+    >
       <Tooltip title="Home" arrow>
         <button
           className="cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95"
           onClick={() => navigate("/landing")}
         >
-          <HomeIcon size={28} fill="black" />
+          <HomeIcon size={24} fill="#e8dfc8" />
         </button>
       </Tooltip>
 
-      <h1 className="flex-1 font-semibold">Welcome to WhatToCook</h1>
+      <h1 className="flex-1 text-cream text-3xl tracking-nav">
+        Welcome to WhatToCook
+      </h1>
 
       <div className="flex gap-6">
         <Tooltip title="Create New Recipe" placement="bottom" arrow>
@@ -27,13 +34,14 @@ export default function NavBarLanding() {
             className="cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95"
             onClick={() => navigate("/create-recipe")}
           >
-            <CreateRecipeIcon size={32} />
+            <CreateRecipeIcon size={32} fill="#e8dfc8" />
           </button>
         </Tooltip>
 
         <button
           onClick={signOut}
-          className="text-zinc-900 rounded hover:text-blue-500 transition-colors cursor-pointer duration-200 hover:scale-105 active:scale-95"
+          className="text-cream text-xl rounded transition-colors cursor-pointer duration-200 hover:scale-105 active:scale-95 border px-3 py-1
+          hover:bg-green hover:text-surface border-green-muted"
         >
           Sign Out
         </button>

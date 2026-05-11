@@ -68,22 +68,22 @@ export default function IngredientSearch({
       <div className="relative">
         <input
           type="text"
-          placeholder="Ingredient Name"
+          placeholder="Search for an ingredient…"
           value={input}
-          className="border border-gray-400 p-2 rounded w-full focus:outline-none"
+          className="border border-green-muted p-2 rounded w-full focus:outline-none bg-surface text-lg"
           onChange={(e) => setInput(e.target.value)}
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setShowSuggestions(false)}
           onKeyDown={(e) => handleKeyDown(e)}
         />
         {showSuggestions && suggestions && (
-          <ul className="border-gray-400 z-10 absolute w-full bg-white border-x border-b rounded shadow-md max-h-60 overflow-y-auto">
+          <ul className="z-10 absolute w-full rounded max-h-60 overflow-y-auto">
             {suggestions.map((s, index) => (
               <li
                 key={s.id}
                 onMouseDown={() => handleSuggestionSelect(s)}
                 onMouseEnter={() => setSelected(index)}
-                className={`px-3 py-2 ${selected === index ? "bg-blue-500/50" : "bg-white"}`}
+                className={`px-3 py-2 ${selected === index ? "bg-green-muted" : "bg-surface"}`}
               >
                 {s.name}
               </li>
