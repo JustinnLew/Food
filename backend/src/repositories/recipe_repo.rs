@@ -1,6 +1,6 @@
 use serde_json::json;
-use sqlx::{PgPool, Postgres, Transaction, types::BigDecimal};
 use sqlx::types::JsonValue;
+use sqlx::{PgPool, Postgres, Transaction, types::BigDecimal};
 use uuid::Uuid;
 
 use crate::models::recipe::{CreateRecipe, RecipeIngredient, RecipeQueryResultRow};
@@ -56,12 +56,12 @@ impl RecipeRepository {
     }
 
     pub async fn query_recipes(
-    &self,
-    ingredients: JsonValue,
-    difficulty: i16,
-    cook_time_mins: i64,
-    threshold: BigDecimal,
-) -> Result<Vec<RecipeQueryResultRow>, sqlx::Error> {
+        &self,
+        ingredients: JsonValue,
+        difficulty: i16,
+        cook_time_mins: i64,
+        threshold: BigDecimal,
+    ) -> Result<Vec<RecipeQueryResultRow>, sqlx::Error> {
         let recipes = sqlx::query!(
             r#"
             WITH
@@ -132,18 +132,21 @@ impl RecipeRepository {
         .fetch_all(&self.pool)
         .await?;
 
-        Ok(recipes.into_iter().map(|r| RecipeQueryResultRow {
-            id: r.id,
-            title: r.title,
-            difficulty: r.difficulty,
-            cook_time_mins: r.cook_time_mins,
-            instructions: r.instructions,
-            image_src: r.image_src,
-            match_score: r.match_score.unwrap_or_default().to_f64().unwrap_or(0.0),
-            ingredients: r.ingredients.unwrap_or(json!([])),
-            missing_ingredients: r.missing_ingredients.unwrap_or(json!([])),
-            insufficient_ingredients: r.insufficient_ingredients.unwrap_or(json!([])),
-        }).collect())
+        Ok(recipes
+            .into_iter()
+            .map(|r| RecipeQueryResultRow {
+                id: r.id,
+                title: r.title,
+                difficulty: r.difficulty,
+                cook_time_mins: r.cook_time_mins,
+                instructions: r.instructions,
+                image_src: r.image_src,
+                match_score: r.match_score.unwrap_or_default().to_f64().unwrap_or(0.0),
+                ingredients: r.ingredients.unwrap_or(json!([])),
+                missing_ingredients: r.missing_ingredients.unwrap_or(json!([])),
+                insufficient_ingredients: r.insufficient_ingredients.unwrap_or(json!([])),
+            })
+            .collect())
     }
 
     pub async fn query_recipes_random(

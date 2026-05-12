@@ -16,12 +16,6 @@ pub struct CreateRecipe {
     pub instructions: JsonValue,
     pub ingredients: Vec<RecipeIngredient>,
 }
-#[derive(Debug, Deserialize)]
-pub struct RecipeInstruction {
-    pub step: i32,
-    pub text: String,
-    pub timer: i32,
-}
 
 #[derive(Debug, Serialize)]
 pub struct RecipeQueryResultRow {
@@ -55,7 +49,7 @@ pub struct RecipeQueryIngredient {
 #[derive(Deserialize, Debug)]
 pub struct RecipeQueryBody {
     pub mode: RecipeQueryMode,
-    pub page: i32,
+    // pub page: i32,
     pub ingredients: Vec<RecipeQueryIngredient>,
     pub time: i64,
     pub difficulty: i16,
