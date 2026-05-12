@@ -26,7 +26,7 @@ mod services;
 
 #[derive(Clone)]
 struct AppState {
-    db: Pool<Postgres>,
+    // db: Pool<Postgres>,
     jwks: JwkSet,
     ingredient_service: IngredientService,
     recipe_service: RecipeService,
@@ -62,7 +62,7 @@ async fn main() {
         ingredient_service: IngredientService::new(IngredientRepository::new(pool.clone())),
         recipe_service: RecipeService::new(RecipeRepository::new(pool.clone())),
         jwks: jwks,
-        db: pool,
+        // db: pool,
     });
     info!("Connected to Database...");
 

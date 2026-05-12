@@ -22,14 +22,19 @@ pub struct RecipeInstruction {
     pub text: String,
     pub timer: i32,
 }
-#[derive(Debug, Deserialize, Serialize)]
-pub struct RecipeRandomQueryResultRow {
+
+#[derive(Debug, Serialize)]
+pub struct RecipeQueryResultRow {
     pub id: i64,
     pub title: String,
     pub difficulty: i16,
     pub cook_time_mins: i64,
     pub instructions: JsonValue,
+    pub image_src: Option<String>,
+    pub match_score: f64,
     pub ingredients: JsonValue,
+    pub missing_ingredients: JsonValue,
+    pub insufficient_ingredients: JsonValue,
 }
 
 #[derive(Deserialize, Debug)]
@@ -40,7 +45,7 @@ pub enum RecipeQueryMode {
     Random,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct RecipeQueryIngredient {
     pub id: i64,
     pub amount: f64,
@@ -52,6 +57,6 @@ pub struct RecipeQueryBody {
     pub mode: RecipeQueryMode,
     pub page: i32,
     pub ingredients: Vec<RecipeQueryIngredient>,
-    pub time: i32,
-    pub difficulty: i32,
+    pub time: i64,
+    pub difficulty: i16,
 }

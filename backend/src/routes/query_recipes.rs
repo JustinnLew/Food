@@ -16,28 +16,32 @@ pub async fn query_recipes(
     println!("{:?}", payload);
     match payload.mode {
         RecipeQueryMode::Strict => {
-            return state
-                .recipe_service
-                .query_recipe_random()
+            let ingredients = serde_json::to_value(&payload.ingredients)
+                .map_err(|_| StatusCode::BAD_REQUEST)?;
+            state.recipe_service
+                .query_recipe_strict(ingredients, payload.difficulty, payload.time)
                 .await
                 .map(Json)
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR);
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
         }
         RecipeQueryMode::Relaxed => {
-            return state
-                .recipe_service
-                .query_recipe_random()
+            let ingredients = serde_json::to_value(&payload.ingredients)
+                .map_err(|_| StatusCode::BAD_REQUEST)?;
+            state.recipe_service
+                .query_recipe_relaxed(ingredients, payload.difficulty, payload.time)
                 .await
                 .map(Json)
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR);
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
         }
         RecipeQueryMode::Random => {
-            return state
+            let ingredients = serde_json::to_value(&payload.ingredients)
+                .map_err(|_| StatusCode::BAD_REQUEST)?;
+            state
                 .recipe_service
-                .query_recipe_random()
+                .query_recipe_random(ingredients)
                 .await
                 .map(Json)
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR);
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
         }
     }
 }

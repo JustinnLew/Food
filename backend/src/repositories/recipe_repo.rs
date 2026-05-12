@@ -1,8 +1,10 @@
 use serde_json::json;
-use sqlx::{PgPool, Postgres, Transaction, query};
+use sqlx::{PgPool, Postgres, Transaction, types::BigDecimal};
+use sqlx::types::JsonValue;
 use uuid::Uuid;
 
-use crate::models::recipe::{CreateRecipe, RecipeIngredient, RecipeRandomQueryResultRow};
+use crate::models::recipe::{CreateRecipe, RecipeIngredient, RecipeQueryResultRow};
+use num_traits::cast::ToPrimitive;
 
 #[derive(Clone)]
 pub struct RecipeRepository {
@@ -53,48 +55,181 @@ impl RecipeRepository {
         Ok(())
     }
 
-    pub async fn query_recipes_strict() {}
+    pub async fn query_recipes(
+    &self,
+    ingredients: JsonValue,
+    difficulty: i16,
+    cook_time_mins: i64,
+    threshold: BigDecimal,
+) -> Result<Vec<RecipeQueryResultRow>, sqlx::Error> {
+        let recipes = sqlx::query!(
+            r#"
+            WITH
+            candidate_recipes AS (
+                SELECT * FROM recipes r
+                WHERE r.difficulty <= $2 AND r.cook_time_mins < $3
+            ),
+            user_ingredients AS (
+                SELECT
+                (elem->>'id')::integer AS ingredient_id,
+                (elem->>'amount')::float * iu.conversion AS user_amount,
+                iu.unit
+                FROM jsonb_array_elements($1::jsonb) AS elem
+                JOIN ingredient_units iu ON iu.unit = elem->>'unit'
+            ),
+            recipe_ingredients_converted AS (
+                SELECT
+                ri.ingredient_id, ri.recipe_id,
+                ri.amount * iu.conversion AS required_amount,
+                cr.title, i.name, ri.unit
+                FROM recipe_ingredients ri
+                JOIN ingredient_units iu ON ri.unit = iu.unit
+                JOIN candidate_recipes cr ON ri.recipe_id = cr.id
+                JOIN ingredients i ON ri.ingredient_id = i.id
+            ),
+            ingredient_matching AS (
+                SELECT
+                rig.recipe_id, rig.ingredient_id, rig.required_amount,
+                rig.name, rig.unit AS recipe_unit, ui.unit AS user_unit, ui.user_amount,
+                CASE
+                    WHEN ui.ingredient_id IS NULL THEN 'missing'
+                    WHEN (ui.unit = 'unit' AND rig.unit != 'unit')
+                    OR (ui.unit != 'unit' AND rig.unit = 'unit') THEN 'missing'
+                    WHEN ui.user_amount < rig.required_amount THEN 'insufficient'
+                    ELSE 'matched'
+                END AS match_status
+                FROM recipe_ingredients_converted rig
+                LEFT JOIN user_ingredients ui ON ui.ingredient_id = rig.ingredient_id
+            ),
+            recipe_scores AS (
+                SELECT
+                recipe_id,
+                ROUND(
+                    COUNT(*) FILTER (WHERE match_status = 'matched')::numeric / COUNT(*)::numeric, 2
+                ) AS match_score,
+                JSON_AGG(JSON_BUILD_OBJECT('ingredient', name, 'required_amount', required_amount, 'unit', recipe_unit))
+                    FILTER (WHERE match_status = 'missing') AS missing_ingredients,
+                JSON_AGG(JSON_BUILD_OBJECT('ingredient', name, 'required_amount', required_amount, 'user_amount', user_amount, 'unit', user_unit))
+                    FILTER (WHERE match_status = 'insufficient') AS insufficient_ingredients,
+                JSON_AGG(JSON_BUILD_OBJECT('name', name, 'amount', required_amount, 'unit', user_unit))
+                    FILTER (WHERE match_status = 'matched') AS ingredients
+                FROM ingredient_matching
+                GROUP BY recipe_id
+                HAVING COUNT(*) FILTER (WHERE match_status = 'matched')::numeric / COUNT(*)::numeric >= $4
+            )
+            SELECT
+            r.id, r.title, r.difficulty, r.cook_time_mins, r.instructions, r.image_src,
+            rs.match_score, rs.ingredients, rs.missing_ingredients, rs.insufficient_ingredients
+            FROM recipes r
+            JOIN recipe_scores rs ON rs.recipe_id = r.id
+            ORDER BY rs.match_score DESC
+            "#,
+            ingredients,
+            difficulty,
+            cook_time_mins,
+            threshold
+        )
+        .fetch_all(&self.pool)
+        .await?;
 
-    pub async fn query_recipes_relaxed() {}
+        Ok(recipes.into_iter().map(|r| RecipeQueryResultRow {
+            id: r.id,
+            title: r.title,
+            difficulty: r.difficulty,
+            cook_time_mins: r.cook_time_mins,
+            instructions: r.instructions,
+            image_src: r.image_src,
+            match_score: r.match_score.unwrap_or_default().to_f64().unwrap_or(0.0),
+            ingredients: r.ingredients.unwrap_or(json!([])),
+            missing_ingredients: r.missing_ingredients.unwrap_or(json!([])),
+            insufficient_ingredients: r.insufficient_ingredients.unwrap_or(json!([])),
+        }).collect())
+    }
 
     pub async fn query_recipes_random(
         &self,
-    ) -> Result<Vec<RecipeRandomQueryResultRow>, sqlx::Error> {
-        let recipes = query!(
+        ingredients: JsonValue,
+    ) -> Result<Vec<RecipeQueryResultRow>, sqlx::Error> {
+        let recipes = sqlx::query!(
             r#"
+            WITH
+            candidate_recipes AS (
+                SELECT * FROM recipes r
+                ORDER BY RANDOM()
+                LIMIT 10
+            ),
+            user_ingredients AS (
+                SELECT
+                (elem->>'id')::integer AS ingredient_id,
+                (elem->>'amount')::float * iu.conversion AS user_amount,
+                iu.unit
+                FROM jsonb_array_elements($1::jsonb) AS elem
+                JOIN ingredient_units iu ON iu.unit = elem->>'unit'
+            ),
+            recipe_ingredients_converted AS (
+                SELECT
+                ri.ingredient_id, ri.recipe_id,
+                ri.amount * iu.conversion AS required_amount,
+                cr.title, i.name, ri.unit
+                FROM recipe_ingredients ri
+                JOIN ingredient_units iu ON ri.unit = iu.unit
+                JOIN candidate_recipes cr ON ri.recipe_id = cr.id
+                JOIN ingredients i ON ri.ingredient_id = i.id
+            ),
+            ingredient_matching AS (
+                SELECT
+                rig.recipe_id, rig.ingredient_id, rig.required_amount,
+                rig.name, rig.unit AS recipe_unit, ui.unit AS user_unit, ui.user_amount,
+                CASE
+                    WHEN ui.ingredient_id IS NULL THEN 'missing'
+                    WHEN (ui.unit = 'unit' AND rig.unit != 'unit')
+                    OR (ui.unit != 'unit' AND rig.unit = 'unit') THEN 'missing'
+                    WHEN ui.user_amount < rig.required_amount THEN 'insufficient'
+                    ELSE 'matched'
+                END AS match_status
+                FROM recipe_ingredients_converted rig
+                LEFT JOIN user_ingredients ui ON ui.ingredient_id = rig.ingredient_id
+            ),
+            recipe_scores AS (
+                SELECT
+                recipe_id,
+                ROUND(
+                    COUNT(*) FILTER (WHERE match_status = 'matched')::numeric / COUNT(*)::numeric, 2
+                ) AS match_score,
+                JSON_AGG(JSON_BUILD_OBJECT('ingredient', name, 'required_amount', required_amount, 'unit', recipe_unit))
+                    FILTER (WHERE match_status = 'missing') AS missing_ingredients,
+                JSON_AGG(JSON_BUILD_OBJECT('ingredient', name, 'required_amount', required_amount, 'user_amount', user_amount, 'unit', user_unit))
+                    FILTER (WHERE match_status = 'insufficient') AS insufficient_ingredients,
+                JSON_AGG(JSON_BUILD_OBJECT('name', name, 'amount', required_amount, 'unit', user_unit))
+                    FILTER (WHERE match_status = 'matched') AS ingredients
+                FROM ingredient_matching
+                GROUP BY recipe_id
+            )
             SELECT
-                r.id,
-                r.title,
-                r.difficulty,
-                r.cook_time_mins,
-                r.instructions,
-                JSON_AGG(
-                    JSON_BUILD_OBJECT(
-                        'name', i.name,
-                        'amount', ri.amount,
-                        'unit', ri.unit
-                    )
-                ) AS ingredients
+            r.id, r.title, r.difficulty, r.cook_time_mins, r.instructions, r.image_src,
+            rs.match_score, rs.ingredients, rs.missing_ingredients, rs.insufficient_ingredients
             FROM recipes r
-            JOIN recipe_ingredients ri ON ri.recipe_id = r.id
-            JOIN ingredients i ON i.id = ri.ingredient_id
-            GROUP BY r.id, r.title, r.difficulty, r.cook_time_mins, r.instructions
-            ORDER BY RANDOM()
-            LIMIT 10;
-            "#
+            JOIN recipe_scores rs ON rs.recipe_id = r.id
+            ORDER BY rs.match_score DESC
+            "#,
+            ingredients,
         )
         .fetch_all(&self.pool)
         .await?;
 
         Ok(recipes
             .into_iter()
-            .map(|r| RecipeRandomQueryResultRow {
+            .map(|r| RecipeQueryResultRow {
                 id: r.id,
                 title: r.title,
                 difficulty: r.difficulty,
                 cook_time_mins: r.cook_time_mins,
                 instructions: r.instructions,
+                image_src: r.image_src,
+                match_score: r.match_score.unwrap_or_default().to_f64().unwrap_or(0.0),
                 ingredients: r.ingredients.unwrap_or(json!([])),
+                missing_ingredients: r.missing_ingredients.unwrap_or(json!([])),
+                insufficient_ingredients: r.insufficient_ingredients.unwrap_or(json!([])),
             })
             .collect())
     }

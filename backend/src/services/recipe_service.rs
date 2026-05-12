@@ -2,9 +2,10 @@ use reqwest::StatusCode;
 use uuid::Uuid;
 
 use crate::{
-    models::recipe::{CreateRecipe, RecipeRandomQueryResultRow},
+    models::recipe::{CreateRecipe, RecipeQueryResultRow},
     repositories::recipe_repo::RecipeRepository,
 };
+use sqlx::types::{BigDecimal, JsonValue};
 
 #[derive(Clone)]
 pub struct RecipeService {
@@ -45,13 +46,29 @@ impl RecipeService {
         Ok(recipe_id)
     }
 
-    pub async fn query_recipe_strict(&self) {}
-
-    pub async fn query_recipe_relaxed(&self) {}
-
-    pub async fn query_recipe_random(&self) -> Result<Vec<RecipeRandomQueryResultRow>, StatusCode> {
+    pub async fn query_recipe_strict(&self,
+        ingredients: JsonValue,
+        difficulty: i16,
+        cook_time_mins: i64) -> Result<Vec<RecipeQueryResultRow>, StatusCode> {
         self.repo
-            .query_recipes_random()
+            .query_recipes(ingredients, difficulty, cook_time_mins, 1.into())
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+    }
+
+    pub async fn query_recipe_relaxed(&self,
+        ingredients: JsonValue,
+        difficulty: i16,
+        cook_time_mins: i64) -> Result<Vec<RecipeQueryResultRow>, StatusCode> {
+        self.repo
+            .query_recipes(ingredients, difficulty, cook_time_mins, BigDecimal::new(5.into(), 1))
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+    }
+
+    pub async fn query_recipe_random(&self, ingredients: JsonValue) -> Result<Vec<RecipeQueryResultRow>, StatusCode> {
+        self.repo
+            .query_recipes_random(ingredients)
             .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
