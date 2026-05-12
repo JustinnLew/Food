@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
 };
 use jsonwebtoken::jwk::JwkSet;
-use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+use sqlx::{postgres::PgPoolOptions};
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
