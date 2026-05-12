@@ -5,6 +5,7 @@ import SignUp from "./routes/Singup";
 import Landing from "./routes/Landing";
 import AuthenticatedRoute from "./auth/AuthenticatedRoute";
 import CreateRecipe from "./routes/CreateRecipe";
+import RecipePage from "./routes/RecipePage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route element={<AuthenticatedRoute />}>
           <Route path="/landing" element={<Landing />} />
           <Route path="/create-recipe" element={<CreateRecipe />} />
+          <Route path="/recipe/:id" element={<RecipePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

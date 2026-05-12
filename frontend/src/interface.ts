@@ -23,7 +23,7 @@ interface RecipeInsufficientIngredient {
   ingredient: string;
   required_amount: number;
   user_amount: number;
-  user_unit: string;
+  unit: string;
 }
 
 interface RecipeInstruction {
@@ -44,4 +44,10 @@ interface Recipe {
   image_src?: string;
 }
 
-export { type Ingredient, type RecipeInstruction, type Recipe };
+const DIFFICULTY: Record<number, string> = {
+  1: "Easy",
+  2: "Medium",
+  3: "Hard",
+};
+
+export { type Ingredient, type RecipeInstruction, type Recipe, DIFFICULTY };

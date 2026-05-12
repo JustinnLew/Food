@@ -4,7 +4,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IngredientSearch from "../components/IngredientSearch";
-import type { Ingredient, Recipe } from "../interface";
+import { DIFFICULTY, type Ingredient, type Recipe } from "../interface";
 import { useEffect, useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
 import LinkIcon from "../icons/LinkIcon";
@@ -17,12 +17,6 @@ const MODES: { label: string; value: QueryMode }[] = [
   { label: "Relaxed", value: "relaxed" },
   { label: "Random", value: "random" },
 ];
-
-const DIFFICULTY: Record<number, string> = {
-  1: "Easy",
-  2: "Medium",
-  3: "Hard",
-};
 
 export default function Landing() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -264,7 +258,11 @@ export default function Landing() {
                           (r.insufficient_ingredients?.length ?? 0)}{" "}
                         ingredients
                       </div>
-                      <Link to="/" className="ml-auto cursor-pointer">
+                      <Link
+                        to={`/recipe/${r.id}`}
+                        state={{ recipe: r }}
+                        className="ml-auto cursor-pointer"
+                      >
                         <LinkIcon size={18} fill="#e8dfc8" />
                       </Link>
                     </div>
