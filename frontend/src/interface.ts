@@ -9,18 +9,18 @@ interface Ingredient {
 
 interface RecipeIngredient {
   amount: number;
-  name: string;
+  name: string; // TODO: change to 'ingredient' on the backend
   unit: string;
 }
 
 interface RecipeMissingIngredient {
-  name: string;
+  ingredient: string;
   required_amount: number;
   unit: string;
 }
 
 interface RecipeInsufficientIngredient {
-  name: string;
+  ingredient: string;
   required_amount: number;
   user_amount: number;
   user_unit: string;
@@ -40,6 +40,8 @@ interface Recipe {
   ingredients: RecipeIngredient[];
   missing_ingredients?: RecipeMissingIngredient[];
   insufficient_ingredients?: RecipeInsufficientIngredient[];
+  match_score: number;
+  image_src?: string;
 }
 
 export { type Ingredient, type RecipeInstruction, type Recipe };
