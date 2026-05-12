@@ -92,7 +92,7 @@ export default function Landing() {
 
   const setAmount = (id: number, amount: number) => {
     setIngredients((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, amount: amount } : item))
+      prev.map((item) => (item.id === id ? { ...item, amount: amount } : item)),
     );
   };
 
@@ -140,61 +140,65 @@ export default function Landing() {
             <IngredientSearch onSelectHandler={onSelectHandler} />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {ingredients.map((i) => (
-              <div
-                key={i.id}
-                className="flex bg-surface2 border border-green-muted hover:border-green transition-all duration-200 rounded-lg p-3"
-              >
-                <div className="flex-1 flex flex-col gap-1">
-                  <div className="flex items-center justify-between">
-                    <h1 className="tracking-wider text-lg">{i.name}</h1>
-                    <button
-                      onClick={() => removeIngredient(i.id)}
-                      className="text-cream-dim hover:text-red-300 cursor-pointer text-xl font-bold leading-none"
-                    >
-                      X
-                    </button>
-                  </div>
-                  <div className="flex w-full justify-between">
-                    <div className="flex gap-2 text-cream-dim text-sm">
-                      <input
-                        type="number"
-                        min={0}
-                        value={amountInputs[i.id] ?? i.amount}
-                        onChange={(e) => handleAmountChange(i.id, e.target.value)}
-                        onBlur={() => handleAmountBlur(i.id)}
-                        className="w-16 bg-surface border border-green-muted rounded px-2 py-0.5 text-cream text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                      {i.supported_units?.length > 1 ? (
-                        <select
-                          value={i.unit}
-                          onChange={(e) => changeUnit(i.id, e.target.value)}
-                          className="bg-surface border border-green-muted rounded px-1 py-0.5 text-cream text-sm cursor-pointer"
-                        >
-                          {i.supported_units.map((u) => (
-                            <option key={u} value={u}>{u}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span>{i.unit}</span>
-                      )}
+                <div
+                  key={i.id}
+                  className="flex bg-surface2 border border-green-muted hover:border-green transition-all duration-200 rounded-lg p-3"
+                >
+                  <div className="flex-1 flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <h1 className="tracking-wider text-lg">{i.name}</h1>
+                      <button
+                        onClick={() => removeIngredient(i.id)}
+                        className="text-cream-dim hover:text-red-300 cursor-pointer text-xl font-bold leading-none"
+                      >
+                        X
+                      </button>
                     </div>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setAmount(i.id, i.amount + 1)}
-                        className="text-2xl font-bold hover:text-blue-300 cursor-pointer"
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() => setAmount(i.id, i.amount - 1)}
-                        className="text-2xl font-bold hover:text-red-300 cursor-pointer"
-                      >
-                        -
-                      </button>
+                    <div className="flex w-full justify-between">
+                      <div className="flex gap-2 text-cream-dim text-sm">
+                        <input
+                          type="number"
+                          min={0}
+                          value={amountInputs[i.id] ?? i.amount}
+                          onChange={(e) =>
+                            handleAmountChange(i.id, e.target.value)
+                          }
+                          onBlur={() => handleAmountBlur(i.id)}
+                          className="w-16 bg-surface border border-green-muted rounded px-2 py-0.5 text-cream text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        {i.supported_units?.length > 1 ? (
+                          <select
+                            value={i.unit}
+                            onChange={(e) => changeUnit(i.id, e.target.value)}
+                            className="bg-surface border border-green-muted rounded px-1 py-0.5 text-cream text-sm cursor-pointer"
+                          >
+                            {i.supported_units.map((u) => (
+                              <option key={u} value={u}>
+                                {u}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span>{i.unit}</span>
+                        )}
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setAmount(i.id, i.amount + 1)}
+                          className="text-2xl font-bold hover:text-blue-300 cursor-pointer"
+                        >
+                          +
+                        </button>
+                        <button
+                          onClick={() => setAmount(i.id, i.amount - 1)}
+                          className="text-2xl font-bold hover:text-red-300 cursor-pointer"
+                        >
+                          -
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               ))}
             </div>
           </AccordionDetails>
@@ -261,7 +265,7 @@ export default function Landing() {
                         ingredients
                       </div>
                       <Link to="/" className="ml-auto cursor-pointer">
-                        <LinkIcon size={18} fill="#e8dfc8"/>
+                        <LinkIcon size={18} fill="#e8dfc8" />
                       </Link>
                     </div>
                     <div className="text-2xl">{r.title}</div>
