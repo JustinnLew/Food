@@ -100,7 +100,7 @@ export default function RecipePage() {
 
   if (!recipe) {
     return (
-      <div className="flex flex-col min-h-screen w-screen bg-background font-display text-cream">
+      <div className="flex flex-col min-h-screen w-full bg-background font-display text-cream">
         <NavBarLanding />
         <div className="flex items-center justify-center flex-1 text-cream-dim">
           Recipe not found
@@ -115,7 +115,7 @@ export default function RecipePage() {
     (recipe.insufficient_ingredients?.length ?? 0);
 
   return (
-    <div className="flex flex-col min-h-screen w-screen bg-background font-display text-cream">
+    <div className="flex flex-col min-h-screen w-full bg-background font-display text-cream">
       <NavBarLanding />
 
       {/* Hero */}

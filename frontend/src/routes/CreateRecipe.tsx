@@ -108,7 +108,7 @@ export default function CreateRecipe() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-screen font-display bg-background text-cream">
+    <div className="flex flex-col min-h-screen w-full font-display bg-background text-cream">
       <NavBarLanding />
       <div className="flex flex-col m-6 items-center">
         <form

@@ -117,7 +117,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-screen font-display bg-background">
+    <div className="flex flex-col min-h-screen w-full font-display bg-background">
       <NavBarLanding />
       <div className="flex flex-col m-6 h-full gap-4">
         {/* Pantry */}

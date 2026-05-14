@@ -50,7 +50,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="h-screen w-screen bg-black text-white flex flex-col items-center justify-center p-4">
+    <div className="h-screen w-full bg-black text-white flex flex-col items-center justify-center p-4">
       <form
         onSubmit={handleSignUp}
         className="flex flex-col gap-6 border border-zinc-800 p-8 rounded-xl w-full max-w-md bg-zinc-900/50"
@@ -91,7 +91,7 @@ export default function SignUp() {
               htmlFor="username"
               className="text-sm font-semibold text-zinc-400"
             >
-              Email Address
+              Username
             </label>
             <input
               id="username"
