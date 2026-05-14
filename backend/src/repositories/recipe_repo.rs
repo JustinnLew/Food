@@ -67,7 +67,7 @@ impl RecipeRepository {
             WITH
             candidate_recipes AS (
                 SELECT * FROM recipes r
-                WHERE r.difficulty <= $2 AND r.cook_time_mins < $3
+                WHERE r.difficulty <= $2 AND r.cook_time_mins <= $3
             ),
             user_ingredients AS (
                 SELECT
