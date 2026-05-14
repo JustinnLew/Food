@@ -73,6 +73,15 @@ export default function Landing() {
     setRecipeCache({});
   }, [ingredients]);
 
+  useEffect(() => {
+    console.log(mode);
+    if (mode !== "random") {
+      setRecipeCache({});
+      fetchRecipes(mode);
+    }
+  }, [ingredients, difficultyFilter]);
+  // Add cooking time to this, but add a seperate state for input to avoid repeated calls to db
+
   const onSelectHandler = (ingredient: Ingredient) => {
     setIngredients((prev) => {
       if (prev.find((i) => i.id === ingredient.id)) return prev;
