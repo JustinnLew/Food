@@ -42,6 +42,7 @@ export default function Landing() {
     setLoading(true);
     try {
       const res = await AuthFetch({
+        // Need to add userId for possible rate limiting in the future
         path: `http://127.0.0.1:3000/api/recipe/query`,
         method: "POST",
         body: {

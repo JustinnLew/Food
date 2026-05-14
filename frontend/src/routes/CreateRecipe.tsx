@@ -23,7 +23,7 @@ export default function CreateRecipe() {
     },
   ]);
 
-  const submitRecipe = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await AuthFetch({
       path: `http://127.0.0.1:3000/api/recipe/create`,
