@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
 import LinkIcon from "../icons/LinkIcon";
 import { Link } from "react-router-dom";
+import Difficulty from "../components/createrecipe/Difficulty";
+import CookingTime from "../components/createrecipe/CookingTime";
 
 type QueryMode = "strict" | "relaxed" | "random";
 
@@ -26,6 +28,8 @@ export default function Landing() {
   >({});
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<QueryMode>("random");
+  const [timeFilter, setTimeFilter] = useState(180);
+  const [difficultyFilter, setDifficultyFilter] = useState(2);
   const [ingredients, setIngredients] = useState<Ingredient[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("pantry") || "[]");
@@ -48,8 +52,8 @@ export default function Landing() {
             amount: i.amount,
             unit: i.unit || i.default_unit,
           })),
-          time: 180,
-          difficulty: 2,
+          time: timeFilter,
+          difficulty: difficultyFilter,
         },
       });
       const data = await res.json();
@@ -119,9 +123,9 @@ export default function Landing() {
   return (
     <div className="flex flex-col min-h-screen w-full font-display bg-background">
       <NavBarLanding />
-      <div className="flex flex-col m-6 h-full gap-4">
+      <div className="flex flex-col m-6 h-full gap-6">
         {/* Pantry */}
-        <Accordion className="w-full p-1 bg-surface border border-green-muted text-cream">
+        <Accordion className="w-full p-1 bg-surface border rounded-md border-green-muted text-cream mb-0">
           <AccordionSummary
             expandIcon={<ExpandMoreIcon sx={{ color: "#e8dfc8" }} />}
             aria-controls="pantry-content"
@@ -130,7 +134,7 @@ export default function Landing() {
             <h1 className="text-3xl text-cream">Your Collection</h1>
           </AccordionSummary>
           <AccordionDetails className="flex flex-col gap-6">
-            <div className="w-full border-b border-cream/40" />
+            <div className="w-full border-cream/40" />
             <IngredientSearch onSelectHandler={onSelectHandler} />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {ingredients.map((i) => (
@@ -198,12 +202,30 @@ export default function Landing() {
           </AccordionDetails>
         </Accordion>
 
+        {/* Filters */}
+        <div className="flex flex-col gap-4 rounded-md p-5 bg-surface border border-green-muted text-cream">
+          <div className="flex flex-col gap-3">
+              <h1 className="text-3xl">Filters</h1>
+              <div className="flex gap-8 p-4 bg-surface2 border border-green-muted rounded-md w-full md:w-2/3">
+                <Difficulty
+                  setDifficulty={setDifficultyFilter}
+                  difficulty={difficultyFilter}
+                />
+                <div className="border-l border-green-muted h-full" />
+                <CookingTime
+                  setCookTimeMins={setTimeFilter}
+                  cookTimeMins={timeFilter}
+                />
+              </div>
+          </div>
+        </div>
+
         {/* Recommendations */}
-        <div className="flex flex-col gap-4 rounded-lg p-5 bg-surface border border-green-muted text-cream">
+        <div className="flex flex-col gap-4 rounded-md p-5 bg-surface border border-green-muted text-cream">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <h1 className="text-3xl">Recommendations</h1>
             {/* Mode tabs */}
-            <div className="flex border border-green-muted rounded-md overflow-hidden w-fit">
+            <div className="flex border border-green-muted rounded-lg overflow-hidden w-fit">
               {MODES.map((m) => (
                 <button
                   key={m.value}
@@ -234,7 +256,7 @@ export default function Landing() {
               {recipes.map((r) => (
                 <div
                   key={r.id}
-                  className="flex flex-col border border-green-muted rounded-md overflow-hidden h-120"
+                  className="flex flex-col border border-green-muted rounded-lg overflow-hidden h-120"
                 >
                   {r.image_src ? (
                     <img
