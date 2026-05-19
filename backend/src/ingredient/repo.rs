@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 
-use crate::models::ingredients::Ingredient;
+use super::Ingredient;
 
 #[derive(Clone)]
 pub struct IngredientRepository {

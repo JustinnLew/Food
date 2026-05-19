@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 use sqlx::types::JsonValue;
 
+pub mod repo;
+pub mod service;
+
 #[derive(Debug, Deserialize)]
 pub struct RecipeIngredient {
     pub id: i64,

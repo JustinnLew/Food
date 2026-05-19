@@ -1,10 +1,9 @@
 use reqwest::StatusCode;
 use uuid::Uuid;
 
-use crate::{
-    models::recipe::{CreateRecipe, RecipeQueryResultRow},
-    repositories::recipe_repo::RecipeRepository,
-};
+use super::repo::RecipeRepository;
+use super::{CreateRecipe, RecipeQueryResultRow};
+
 use sqlx::types::{BigDecimal, JsonValue};
 
 #[derive(Clone)]

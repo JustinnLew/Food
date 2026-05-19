@@ -3,7 +3,7 @@ use sqlx::types::JsonValue;
 use sqlx::{PgPool, Postgres, Transaction, types::BigDecimal};
 use uuid::Uuid;
 
-use crate::models::recipe::{CreateRecipe, RecipeIngredient, RecipeQueryResultRow};
+use super::{CreateRecipe, RecipeIngredient, RecipeQueryResultRow};
 use num_traits::cast::ToPrimitive;
 
 #[derive(Clone)]

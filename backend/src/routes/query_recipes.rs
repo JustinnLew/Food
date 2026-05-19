@@ -5,7 +5,7 @@ use reqwest::StatusCode;
 
 use crate::{
     AppState,
-    models::recipe::{RecipeQueryBody, RecipeQueryMode},
+    recipe::{RecipeQueryBody, RecipeQueryMode},
 };
 
 pub async fn query_recipes(

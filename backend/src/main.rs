@@ -5,24 +5,22 @@ use axum::{
     routing::{get, post},
 };
 use jsonwebtoken::jwk::JwkSet;
-use sqlx::{postgres::PgPoolOptions};
+use sqlx::postgres::PgPoolOptions;
 use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
 use crate::{
-    middlewares::auth::auth_guard,
-    repositories::{ingredient_repo::IngredientRepository, recipe_repo::RecipeRepository},
-    services::{ingredients_service::IngredientService, recipe_service::RecipeService},
+    ingredient::repo::IngredientRepository, ingredient::service::IngredientService,
+    middlewares::auth::auth_guard, recipe::repo::RecipeRepository, recipe::service::RecipeService,
 };
 use routes::create_recipe::create_recipe;
 use routes::ingredient_search::search_ingredients;
 use routes::query_recipes::query_recipes;
 
+mod ingredient;
 mod middlewares;
-mod models;
-mod repositories;
+mod recipe;
 mod routes;
-mod services;
 
 #[derive(Clone)]
 struct AppState {

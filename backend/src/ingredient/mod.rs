@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
+pub mod repo;
+pub mod service;
 
 #[derive(Deserialize, Debug)]
 pub struct IngredientSearchQuery {

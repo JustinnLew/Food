@@ -8,7 +8,7 @@ use axum::{
 
 use crate::{
     AppState,
-    models::ingredients::{Ingredient, IngredientSearchQuery},
+    ingredient::{Ingredient, IngredientSearchQuery},
 };
 
 pub async fn search_ingredients(

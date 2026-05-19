@@ -4,7 +4,7 @@ use axum::{Extension, Json, extract::State, response::IntoResponse};
 use reqwest::StatusCode;
 use sqlx::types::Uuid;
 
-use crate::{AppState, middlewares::auth::Claims, models::recipe::CreateRecipe};
+use crate::{AppState, middlewares::auth::Claims, recipe::CreateRecipe};
 
 pub async fn create_recipe(
     State(state): State<Arc<AppState>>,

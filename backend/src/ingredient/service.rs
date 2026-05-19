@@ -1,6 +1,7 @@
 use reqwest::StatusCode;
 
-use crate::{IngredientRepository, models::ingredients::Ingredient};
+use super::Ingredient;
+use super::repo::IngredientRepository;
 
 #[derive(Clone)]
 pub struct IngredientService {
