@@ -10,8 +10,7 @@ use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
 use crate::{
-    ingredient::repo::IngredientRepository, ingredient::service::IngredientService,
-    middlewares::auth::auth_guard, recipe::repo::RecipeRepository, recipe::service::RecipeService,
+    embedding::EmbeddingService, ingredient::{repo::IngredientRepository, service::IngredientService}, middlewares::auth::auth_guard, recipe::{repo::RecipeRepository, service::RecipeService}
 };
 use routes::create_recipe::create_recipe;
 use routes::ingredient_search::search_ingredients;
@@ -21,6 +20,7 @@ mod ingredient;
 mod middlewares;
 mod recipe;
 mod routes;
+mod embedding;
 
 #[derive(Clone)]
 struct AppState {
@@ -28,6 +28,7 @@ struct AppState {
     jwks: JwkSet,
     ingredient_service: IngredientService,
     recipe_service: RecipeService,
+    embedding_service: EmbeddingService,
 }
 
 #[tokio::main]
@@ -60,6 +61,10 @@ async fn main() {
         ingredient_service: IngredientService::new(IngredientRepository::new(pool.clone())),
         recipe_service: RecipeService::new(RecipeRepository::new(pool.clone())),
         jwks: jwks,
+        embedding_service: EmbeddingService::new(
+            &std::env::var("EMBEDDING_API_URL").expect("EMBEDDING_API_URL must be set"),
+            &std::env::var("EMBEDDING_MODEL").expect("EMBEDDING_MODEL must be set"),
+        ),
         // db: pool,
     });
     info!("Connected to Database...");
