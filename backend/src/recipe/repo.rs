@@ -1,3 +1,4 @@
+use pgvector::Vector;
 use serde_json::json;
 use sqlx::types::JsonValue;
 use sqlx::{PgPool, Postgres, Transaction, types::BigDecimal};
@@ -14,6 +15,26 @@ pub struct RecipeRepository {
 impl RecipeRepository {
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
+    }
+
+    pub async fn insert_recipe_embedding(
+        tx: &mut Transaction<'_, Postgres>,
+        recipe_id: i64,
+        embedding: Vec<f32>,
+    ) -> Result<(), sqlx::Error> {
+        let embedding = Vector::from(embedding);
+        sqlx::query!(
+            r#"
+                UPDATE recipes
+                SET embedding = (embedding)
+                WHERE id = $1
+            "#,
+            recipe_id,
+        )
+        .bind(embedding)
+        .execute(&mut **tx)
+        .await?;
+        Ok(())
     }
 
     pub async fn insert_recipe_details(

@@ -18,10 +18,23 @@ impl RecipeService {
         Self { repo }
     }
 
+    pub async fn store_embedding(&self, recipe_id: i64, embedding: Vec<f32>) -> Result<(), StatusCode> {
+        let mut tx = self
+            .repo
+            .pool
+            .begin()
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        RecipeRepository::insert_recipe_embedding(&mut tx, recipe_id, embedding).await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        Ok(())
+    }
+
     pub async fn create_recipe(
         &self,
         user_id: Uuid,
-        payload: CreateRecipe,
+        payload: &CreateRecipe,
     ) -> Result<i64, StatusCode> {
         // Could consider a refactor to move this into the repository layer?
         let mut tx = self
@@ -40,8 +53,6 @@ impl RecipeService {
                 .await
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         }
-
-        let embedding_text = EmbeddingService::build_recipe_text(&payload.title, &payload.description, &payload.tags);
 
         tx.commit()
             .await

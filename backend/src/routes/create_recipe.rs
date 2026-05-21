@@ -3,8 +3,9 @@ use std::sync::Arc;
 use axum::{Extension, Json, extract::State, response::IntoResponse};
 use reqwest::StatusCode;
 use sqlx::types::Uuid;
+use tracing::warn;
 
-use crate::{AppState, middlewares::auth::Claims, recipe::CreateRecipe};
+use crate::{AppState, embedding::EmbeddingService, middlewares::auth::Claims, recipe::CreateRecipe};
 
 pub async fn create_recipe(
     State(state): State<Arc<AppState>>,
@@ -17,12 +18,23 @@ pub async fn create_recipe(
 
     let recipe_id = state
         .recipe_service
-        .create_recipe(user_id, payload)
+        .create_recipe(user_id, &payload)
         .await
         .map_err(|e| {
-            eprintln!("Failed to create recipe: {:?}", e);
+            warn!("Failed to create recipe: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
+
+    let embedding_text = EmbeddingService::build_recipe_text(&payload.title, &payload.description, &payload.tags);
+    tokio::spawn(async move {
+        if let Ok(embedding) = state.embedding_service.embed(&embedding_text, 512).await {
+            if let Err(e) = state.recipe_service.store_embedding(recipe_id, embedding).await {
+                warn!("Failed to store embedding for recipe {}: {:?}", recipe_id, e);
+            }
+        } else {
+            warn!("Failed to generate embedding for recipe {}", recipe_id);
+        }
+    });
 
     Ok((StatusCode::CREATED, Json(recipe_id)))
 }
