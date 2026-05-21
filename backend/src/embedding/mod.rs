@@ -34,6 +34,6 @@ impl EmbeddingService {
     }
 
     pub fn build_recipe_text(title: &str, description: &str, tags: &[String]) -> String {
-        format!("Recipe: {}. {}. Tags: {}", title, description, tags.join(", "))
+        format!("Recipe: {}. Description: {}. Tags: {}", title, description, tags.join(", "))
     }
 }

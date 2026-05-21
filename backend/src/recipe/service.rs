@@ -1,6 +1,8 @@
 use reqwest::StatusCode;
 use uuid::Uuid;
 
+use crate::embedding::EmbeddingService;
+
 use super::repo::RecipeRepository;
 use super::{CreateRecipe, RecipeQueryResultRow};
 
@@ -38,6 +40,8 @@ impl RecipeService {
                 .await
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         }
+
+        let embedding_text = EmbeddingService::build_recipe_text(&payload.title, &payload.description, &payload.tags);
 
         tx.commit()
             .await

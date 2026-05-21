@@ -18,6 +18,8 @@ pub struct CreateRecipe {
     pub cook_time_minutes: i64,
     pub instructions: JsonValue,
     pub ingredients: Vec<RecipeIngredient>,
+    pub description: String,
+    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
