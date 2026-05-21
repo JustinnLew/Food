@@ -1,8 +1,6 @@
 use reqwest::StatusCode;
 use uuid::Uuid;
 
-use crate::embedding::EmbeddingService;
-
 use super::repo::RecipeRepository;
 use super::{CreateRecipe, RecipeQueryResultRow};
 
@@ -19,16 +17,8 @@ impl RecipeService {
     }
 
     pub async fn store_embedding(&self, recipe_id: i64, embedding: Vec<f32>) -> Result<(), StatusCode> {
-        let mut tx = self
-            .repo
-            .pool
-            .begin()
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        RecipeRepository::insert_recipe_embedding(&mut tx, recipe_id, embedding).await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-        Ok(())
+        RecipeRepository::insert_recipe_embedding(&self.repo.pool, recipe_id, embedding).await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
 
     pub async fn create_recipe(

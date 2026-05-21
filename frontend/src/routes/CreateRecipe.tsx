@@ -34,6 +34,8 @@ export default function CreateRecipe() {
         image_src: imageSrc,
         difficulty: difficulty,
         cook_time_minutes: cookTimeMins,
+        description: "Test",
+        tags: ["Test"],
         instructions: instructions.map((inst) => ({
           text: inst.text,
           timer: inst.timer,
@@ -49,6 +51,7 @@ export default function CreateRecipe() {
       const newId = await res.json();
       console.log(`Recipe #${newId} created successfully!`);
     } else {
+      // Todo change to something meaningful
       alert("Something went wrong on the server.");
     }
   };

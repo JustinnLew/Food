@@ -26,9 +26,10 @@ pub async fn create_recipe(
         })?;
 
     let embedding_text = EmbeddingService::build_recipe_text(&payload.title, &payload.description, &payload.tags);
+    let sc = state.clone();
     tokio::spawn(async move {
-        if let Ok(embedding) = state.embedding_service.embed(&embedding_text, 512).await {
-            if let Err(e) = state.recipe_service.store_embedding(recipe_id, embedding).await {
+        if let Ok(embedding) = sc.embedding_service.embed(&embedding_text, 512).await {
+            if let Err(e) = sc.recipe_service.store_embedding(recipe_id, embedding).await {
                 warn!("Failed to store embedding for recipe {}: {:?}", recipe_id, e);
             }
         } else {

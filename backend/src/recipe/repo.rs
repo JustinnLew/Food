@@ -18,21 +18,17 @@ impl RecipeRepository {
     }
 
     pub async fn insert_recipe_embedding(
-        tx: &mut Transaction<'_, Postgres>,
+        pool: &PgPool,
         recipe_id: i64,
         embedding: Vec<f32>,
     ) -> Result<(), sqlx::Error> {
         let embedding = Vector::from(embedding);
-        sqlx::query!(
-            r#"
-                UPDATE recipes
-                SET embedding = (embedding)
-                WHERE id = $1
-            "#,
-            recipe_id,
+        sqlx::query(
+            r#"UPDATE recipes SET embedding = $2 WHERE id = $1"#,
         )
+        .bind(recipe_id)
         .bind(embedding)
-        .execute(&mut **tx)
+        .execute(pool)
         .await?;
         Ok(())
     }
