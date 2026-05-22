@@ -3,7 +3,6 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import IngredientSearch from "../components/IngredientSearch";
 import { DIFFICULTY, type Ingredient, type Recipe } from "../interface";
 import { useEffect, useState } from "react";
 import AuthFetch from "../auth/AuthFetch";
@@ -23,7 +22,6 @@ const MODES: { label: string; value: QueryMode }[] = [
 
 export default function Landing() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [amountInputs, setAmountInputs] = useState<Record<number, string>>({});
   const [recipeCache, setRecipeCache] = useState<
     Partial<Record<QueryMode, Recipe[]>>
   >({});
@@ -146,18 +144,18 @@ export default function Landing() {
         {/* Filters */}
         <div className="flex flex-col gap-4 rounded-md p-5 bg-surface border border-green-muted text-cream">
           <div className="flex flex-col gap-3">
-              <h1 className="text-3xl">Filters</h1>
-              <div className="flex gap-8 p-4 bg-surface2 border border-green-muted rounded-md w-full md:w-2/3">
-                <Difficulty
-                  setDifficulty={setDifficultyFilter}
-                  difficulty={difficultyFilter}
-                />
-                <div className="border-l border-green-muted h-full" />
-                <CookingTime
-                  setCookTimeMins={setTimeFilter}
-                  cookTimeMins={timeFilter}
-                />
-              </div>
+            <h1 className="text-3xl">Filters</h1>
+            <div className="flex gap-8 p-4 bg-surface2 border border-green-muted rounded-md w-full md:w-2/3">
+              <Difficulty
+                setDifficulty={setDifficultyFilter}
+                difficulty={difficultyFilter}
+              />
+              <div className="border-l border-green-muted h-full" />
+              <CookingTime
+                setCookTimeMins={setTimeFilter}
+                cookTimeMins={timeFilter}
+              />
+            </div>
           </div>
         </div>
 
