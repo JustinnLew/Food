@@ -1,9 +1,15 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
-struct Req { model: String, input: String, dimensions: usize }
+struct Req {
+    model: String,
+    input: String,
+    dimensions: usize,
+}
 #[derive(Deserialize)]
-struct Res { embeddings: Vec<Vec<f32>> }
+struct Res {
+    embeddings: Vec<Vec<f32>>,
+}
 
 #[derive(Clone)]
 pub struct EmbeddingService {
@@ -22,9 +28,14 @@ impl EmbeddingService {
     }
 
     pub async fn embed(&self, text: &str, dimensions: usize) -> Result<Vec<f32>, reqwest::Error> {
-        let res = self.client
+        let res = self
+            .client
             .post(self.url.clone())
-            .json(&Req { model: self.model.clone(), input: text.to_string(), dimensions: dimensions})
+            .json(&Req {
+                model: self.model.clone(),
+                input: text.to_string(),
+                dimensions: dimensions,
+            })
             .send()
             .await?
             .json::<Res>()
@@ -34,6 +45,11 @@ impl EmbeddingService {
     }
 
     pub fn build_recipe_text(title: &str, description: &str, tags: &[String]) -> String {
-        format!("Recipe: {}. Description: {}. Tags: {}", title, description, tags.join(", "))
+        format!(
+            "Recipe: {}. Description: {}. Tags: {}",
+            title,
+            description,
+            tags.join(", ")
+        )
     }
 }

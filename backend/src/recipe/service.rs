@@ -16,8 +16,13 @@ impl RecipeService {
         Self { repo }
     }
 
-    pub async fn store_embedding(&self, recipe_id: i64, embedding: Vec<f32>) -> Result<(), StatusCode> {
-        RecipeRepository::insert_recipe_embedding(&self.repo.pool, recipe_id, embedding).await
+    pub async fn store_embedding(
+        &self,
+        recipe_id: i64,
+        embedding: Vec<f32>,
+    ) -> Result<(), StatusCode> {
+        RecipeRepository::insert_recipe_embedding(&self.repo.pool, recipe_id, embedding)
+            .await
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
     }
 

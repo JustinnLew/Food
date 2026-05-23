@@ -26,6 +26,7 @@ export default function CreateRecipe() {
   const [tags, setTags] = useState<string[]>([]);
   const [successId, setSuccessId] = useState<number | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const [serves, setServes] = useState<number>(1);
 
   const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,6 +41,7 @@ export default function CreateRecipe() {
         cook_time_minutes: cookTimeMins,
         description: description,
         tags: tags.map((tag) => tag.trim()),
+        serves: serves,
         instructions: instructions.map((inst) => ({
           text: inst.text,
           timer: inst.timer,
@@ -123,7 +125,9 @@ export default function CreateRecipe() {
           <span className="text-green text-xl">✓</span>
           <div className="flex flex-col">
             <span className="text-cream font-medium">Recipe posted!</span>
-            <span className="text-cream/60 text-sm">Recipe #{successId} created successfully.</span>
+            <span className="text-cream/60 text-sm">
+              Recipe created successfully.
+            </span>
           </div>
           <button
             onClick={() => setSuccessId(null)}
@@ -138,7 +142,9 @@ export default function CreateRecipe() {
           <span className="text-red-400 text-xl">✕</span>
           <div className="flex flex-col">
             <span className="text-cream font-medium">Something went wrong</span>
-            <span className="text-cream/60 text-sm">Your recipe could not be posted. Please try again.</span>
+            <span className="text-cream/60 text-sm">
+              Your recipe could not be posted. Please try again.
+            </span>
           </div>
           <button
             onClick={() => setError(false)}
@@ -196,7 +202,9 @@ export default function CreateRecipe() {
 
           {/* Description and Tags */}
           <div className="flex flex-col gap-4">
-            <h2 className="text-2xl text-cream-dim tracking-wide">Description</h2>
+            <h2 className="text-2xl text-cream-dim tracking-wide">
+              Description
+            </h2>
             <textarea
               placeholder="Enter a brief description of your recipe..."
               className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
@@ -206,15 +214,30 @@ export default function CreateRecipe() {
             />
           </div>
 
-          <div className="flex flex-col gap-4">
-            <h2 className="text-2xl text-cream-dim tracking-wide">Tags</h2>
-            <input
-              type="text"
-              placeholder="Enter tags separated by commas..."
-              className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
-              value={tags}
-              onChange={(e) => setTags(e.target.value.split(",").map((tag) => tag))}
-            />
+          <div className="flex gap-4">
+            <div className="flex flex-col gap-4 flex-1">
+              <h2 className="text-2xl text-cream-dim tracking-wide">Tags</h2>
+              <input
+                type="text"
+                placeholder="Enter tags separated by commas..."
+                className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
+                value={tags}
+                onChange={(e) =>
+                  setTags(e.target.value.split(",").map((tag) => tag))
+                }
+              />
+            </div>
+            {/* Serves */}
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl text-cream-dim tracking-wide">Serves</h2>
+              <input
+                type="number"
+                min={1}
+                className="w-24 bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
+                value={serves}
+                onChange={(e) => setServes(parseInt(e.target.value))}
+              />
+            </div>
           </div>
 
           {/* Details Section */}

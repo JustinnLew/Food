@@ -10,17 +10,20 @@ use tower_http::cors::CorsLayer;
 use tracing::{Level, info};
 
 use crate::{
-    embedding::EmbeddingService, ingredient::{repo::IngredientRepository, service::IngredientService}, middlewares::auth::auth_guard, recipe::{repo::RecipeRepository, service::RecipeService}
+    embedding::EmbeddingService,
+    ingredient::{repo::IngredientRepository, service::IngredientService},
+    middlewares::auth::auth_guard,
+    recipe::{repo::RecipeRepository, service::RecipeService},
 };
 use routes::create_recipe::create_recipe;
 use routes::ingredient_search::search_ingredients;
 use routes::query_recipes::query_recipes;
 
+mod embedding;
 mod ingredient;
 mod middlewares;
 mod recipe;
 mod routes;
-mod embedding;
 
 #[derive(Clone)]
 struct AppState {

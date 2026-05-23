@@ -20,6 +20,8 @@ pub struct CreateRecipe {
     pub ingredients: Vec<RecipeIngredient>,
     pub description: String,
     pub tags: Vec<String>,
+    pub serves: i16,
+    pub image_src: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
