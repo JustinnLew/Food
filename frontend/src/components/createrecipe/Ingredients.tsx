@@ -53,6 +53,7 @@ export default function Ingredients({
                 <div className="flex gap-2 text-cream-dim text-sm">
                   <input
                     type="number"
+                    step="any"
                     min={0}
                     value={amountInputs[i.id] ?? i.amount}
                     onChange={(e) => handleAmountChange(i.id, e.target.value)}

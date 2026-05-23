@@ -81,7 +81,7 @@ function StepItem({ step, index }: { step: RecipeInstruction; index: number }) {
         >
           {step.text}
         </p>
-        {step.timer > 0 && <StepTimer seconds={step.timer} />}
+        {step.timer > 0 && <StepTimer seconds={step.timer*60} />}
       </div>
     </div>
   );

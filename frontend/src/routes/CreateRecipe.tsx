@@ -22,6 +22,10 @@ export default function CreateRecipe() {
       timer: 1,
     },
   ]);
+  const [description, setDescription] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [successId, setSuccessId] = useState<number | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   const submitRecipe = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,8 +38,8 @@ export default function CreateRecipe() {
         image_src: imageSrc,
         difficulty: difficulty,
         cook_time_minutes: cookTimeMins,
-        description: "Test",
-        tags: ["Test"],
+        description: description,
+        tags: tags.map((tag) => tag.trim()),
         instructions: instructions.map((inst) => ({
           text: inst.text,
           timer: inst.timer,
@@ -49,10 +53,12 @@ export default function CreateRecipe() {
     });
     if (res.ok) {
       const newId = await res.json();
-      console.log(`Recipe #${newId} created successfully!`);
+      setSuccessId(newId);
+      setError(false);
+      setTimeout(() => setSuccessId(null), 4000);
     } else {
-      // Todo change to something meaningful
-      alert("Something went wrong on the server.");
+      setError(true);
+      setTimeout(() => setError(false), 4000);
     }
   };
 
@@ -112,6 +118,36 @@ export default function CreateRecipe() {
 
   return (
     <div className="flex flex-col min-h-screen w-full font-display bg-background text-cream">
+      {successId && (
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-surface border border-green rounded-md shadow-xl animate-fade-in">
+          <span className="text-green text-xl">✓</span>
+          <div className="flex flex-col">
+            <span className="text-cream font-medium">Recipe posted!</span>
+            <span className="text-cream/60 text-sm">Recipe #{successId} created successfully.</span>
+          </div>
+          <button
+            onClick={() => setSuccessId(null)}
+            className="ml-4 text-cream/40 hover:text-cream transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {error && (
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-surface border border-red-400/50 rounded-md shadow-xl">
+          <span className="text-red-400 text-xl">✕</span>
+          <div className="flex flex-col">
+            <span className="text-cream font-medium">Something went wrong</span>
+            <span className="text-cream/60 text-sm">Your recipe could not be posted. Please try again.</span>
+          </div>
+          <button
+            onClick={() => setError(false)}
+            className="ml-4 text-cream/40 hover:text-cream transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <NavBarLanding />
       <div className="flex flex-col m-6 items-center">
         <form
@@ -158,6 +194,29 @@ export default function CreateRecipe() {
             </div>
           </div>
 
+          {/* Description and Tags */}
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">Description</h2>
+            <textarea
+              placeholder="Enter a brief description of your recipe..."
+              className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+            />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl text-cream-dim tracking-wide">Tags</h2>
+            <input
+              type="text"
+              placeholder="Enter tags separated by commas..."
+              className="w-full bg-background border border-green-muted p-2 rounded text-cream focus:outline-none focus:border-green transition-colors"
+              value={tags}
+              onChange={(e) => setTags(e.target.value.split(",").map((tag) => tag))}
+            />
+          </div>
+
           {/* Details Section */}
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl text-cream-dim tracking-wide">Details</h2>
@@ -177,7 +236,7 @@ export default function CreateRecipe() {
           {/* Ingredients Section */}
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl text-cream-dim tracking-wide">
-              Ingredients
+              Essential Ingredients
             </h2>
             <div className="p-4 bg-surface2 border border-green-muted rounded-md">
               <Ingredients

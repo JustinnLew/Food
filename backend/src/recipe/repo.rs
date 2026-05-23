@@ -39,13 +39,15 @@ impl RecipeRepository {
         payload: &CreateRecipe,
     ) -> Result<i64, sqlx::Error> {
         let row = sqlx::query!(
-            r#"INSERT INTO public.recipes (author, title, difficulty, cook_time_mins, instructions)
-               VALUES ($1, $2, $3, $4, $5) RETURNING id"#,
+            r#"INSERT INTO public.recipes (author, title, difficulty, cook_time_mins, instructions, description, tags)
+               VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"#,
             user_id,
             payload.title,
             payload.difficulty,
             payload.cook_time_minutes,
-            payload.instructions
+            payload.instructions,
+            payload.description,
+            &payload.tags
         )
         .fetch_one(&mut **tx)
         .await?;
